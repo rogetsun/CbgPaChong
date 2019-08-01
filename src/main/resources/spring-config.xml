@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <!--引入配置文件,配置文件中使用-->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="fileEncoding" value="UTF-8"/>
+        <property name="locations">
+            <list>
+                <value>classpath:db.properties</value>
+                <value>classpath:config.properties</value>
+            </list>
+        </property>
+    </bean>
+    <!--程序中使用,服务配置-->
+    <bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="fileEncoding" value="UTF-8"/>
+        <property name="locations">
+            <list>
+                <value>classpath:config.properties</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <!-- 爬虫类配置 -->
+
+    <bean id="plantomjsWebDriver" class="com.uv.driver.MyPhantomJSWebDriver" scope="prototype">
+        <property name="driverExecutorPath" value="${driver.plantomjs.executor.path}"/>
+    </bean>
+
+    <bean id="chromeWebDriver" class="com.uv.driver.MyChromeWebDriver" scope="prototype">
+        <property name="driverExecutorPath" value="${driver.chrome.executor.path}"/>
+        <property name="headless" value="${driver.chrome.headless}"/>
+    </bean>
+
+    <bean id="filter" class="com.uv.cbg.FilterBean" scope="prototype">
+        <property name="level" value="${search.level.value}"/>
+        <property name="menpais" value="${search.menpai.values}"/>
+        <property name="allScore" value="${search.score.value.allScore}"/>
+        <property name="personScore" value="${search.score.value.personScore}"/>
+        <property name="showPublish" value="${search.showPublish}"/>
+    </bean>
+
+    <bean id="cbgFinder" class="com.uv.cbg.CbgFinder" scope="prototype">
+        <property name="myDriver" ref="chromeWebDriver"/>
+        <property name="filterBean" ref="filter"/>
+    </bean>
+
+    <bean id="cbgFinderContainer" class="com.uv.cbg.CbgFinderContainer">
+        <property name="serverNames" value="${search.serverNames}"/>
+    </bean>
+
+</beans>
