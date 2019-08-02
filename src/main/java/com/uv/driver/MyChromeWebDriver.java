@@ -25,6 +25,7 @@ public class MyChromeWebDriver implements MyDriver {
         ChromeOptions chromeOptions = new ChromeOptions();
         //设置 chrome 的无头模式
         chromeOptions.setHeadless(this.isHeadless);
+        chromeOptions.setAcceptInsecureCerts(true);
         //启动一个 chrome 实例
         this.driver = new ChromeDriver(chromeOptions);
         return driver;
