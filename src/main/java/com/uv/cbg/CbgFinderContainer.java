@@ -79,7 +79,7 @@ public class CbgFinderContainer implements ApplicationContextAware {
         }
         executorService.shutdown();
 
-        if (cbgGamers.size() > 0 || true) {
+        if (cbgGamers.size() > 0) {
             notify.notify(cbgGamers);
         }
 

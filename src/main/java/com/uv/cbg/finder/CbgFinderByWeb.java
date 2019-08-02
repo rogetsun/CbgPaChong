@@ -126,6 +126,7 @@ public class CbgFinderByWeb implements CbgFinder {
                     WebElement p = products.get(doneIdx);
 
                     CbgGamer gamer = new CbgGamer(p);
+                    gamer.setUrl(driver.getCurrentUrl());
                     gamers.add(gamer);
 
                 }

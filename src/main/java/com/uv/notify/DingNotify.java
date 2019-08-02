@@ -36,32 +36,38 @@ public class DingNotify implements Notify {
                  */
                 request.setMsgtype("link");
                 OapiRobotSendRequest.Link link = new OapiRobotSendRequest.Link();
-                StringBuilder url = new StringBuilder().append("https://my.cbg.163.com/cgi/mweb/pl/role?platform_type=1");
-                switch (gamer.getLevel()) {
-                    case 0:
-                        url.append("&equip_level_min=69&equip_level_max=69");
-                        break;
-                    case 1:
-                        url.append("&equip_level_min=70&equip_level_max=89");
-                        break;
-                    case 2:
-                        url.append("&equip_level_min=90&equip_level_max=119");
-                        break;
-                    default:
+//                StringBuilder url = new StringBuilder().append("https://my.cbg.163.com/cgi/mweb/pl/role?platform_type=1");
+//                switch (gamer.getLevel()) {
+//                    case 0:
+//                        url.append("&equip_level_min=69&equip_level_max=69");
+//                        break;
+//                    case 1:
+//                        url.append("&equip_level_min=70&equip_level_max=89");
+//                        break;
+//                    case 2:
+//                        url.append("&equip_level_min=90&equip_level_max=119");
+//                        break;
+//                    default:
+//
+//                }
+//                if (gamer.getPersonScore() > 0) {
+//                    url.append("&role_score=").append(gamer.getPersonScore());
+//                }
+//                if (gamer.getTotalScore() > 0) {
+//                    url.append("&total_score=").append(gamer.getTotalScore());
+//                }
 
-                }
-                if (gamer.getPersonScore() > 0) {
-                    url.append("&role_score=").append(gamer.getPersonScore());
-                }
-                if(gamer.getTotalScore() > 0){
-                    url.append("&total_score=").append(gamer.getTotalScore());
-                }
-
-                link.setMessageUrl("https://www.dingtalk.com/");
+                link.setMessageUrl(gamer.getUrl());
                 link.setPicUrl("");
-                link.setTitle("时代的火车向前开");
-                link.setText("这个即将发布的新版本，创始人陈航（花名“无招”）称它为“红树林”。\n" +
-                        "而在此之前，每当面临重大升级，产品经理们都会取一个应景的代号，这一次，为什么是“红树林");
+                link.setTitle("[" + gamer.getMenPai() + "]" + ":" + gamer.getPrice().toString());
+
+                link.setText(
+                        gamer.getServerName()
+                                + "[" + gamer.getMenPai() + "]"
+                                + gamer.getTotalScore() + "/" + gamer.getPersonScore()
+                                + ":"
+                                + gamer.getPrice().toString()
+                );
                 request.setLink(link);
 
                 OapiRobotSendResponse response = client.execute(request);

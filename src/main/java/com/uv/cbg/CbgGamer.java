@@ -16,6 +16,7 @@ public class CbgGamer {
 
     private int id;
     private String name;
+    private String url;
     /**
      * 门派
      */
@@ -136,6 +137,13 @@ public class CbgGamer {
     public CbgGamer() {
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
     public int getId() {
         return id;
     }
