@@ -65,7 +65,7 @@ public class CbgFinderContainer implements ApplicationContextAware {
 
             try {
                 CbgFindResult result = future.get();
-                log.debug("[" + result.getServerName() + "] find over！found [" + result.getFoundCount() + "]个游戏号");
+                log.debug("find result:[" + result.getServerName() + "] find over！found [" + result.getFoundCount() + "]个游戏号");
             } catch (InterruptedException | ExecutionException e) {
                 log.error("获取执行结果失败!", e);
             }
