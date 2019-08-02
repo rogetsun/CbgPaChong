@@ -52,16 +52,11 @@ public class MyAreaServerFetcher extends CbgFinderByWeb {
 
             JSONArray areaServers = new JSONArray();
             //idx[0] : area大区下标； idx[1] : 服务器下标
-            int[] idx = new int[]{14, 110};
+            int[] idx = new int[]{this.areaStartIdx, this.serverStartIdx};
 
             int f = 0;
             JSONObject ret = null;
             for (; f < 2; ) {
-                if (f == 1) {
-//                    String tmpIdx = ret.getString("idx");
-//                    idx[0] = Integer.valueOf(tmpIdx.split("-")[0]);
-//                    idx[1] = Integer.valueOf(tmpIdx.split("-")[1]);
-                }
                 ret = this.selectAreaServer(webDriver, idx);
                 log.debug(ret);
                 // https://my.cbg.163.com/cgi/mweb/pl/role?platform_type=1&serverid=180
