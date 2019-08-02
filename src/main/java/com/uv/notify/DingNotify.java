@@ -1,5 +1,7 @@
 package com.uv.notify;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.DingTalkClient;
 import com.dingtalk.api.request.OapiRobotSendRequest;
@@ -10,6 +12,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -19,15 +26,41 @@ public class DingNotify implements Notify {
 
     private static final Log log = LogFactory.getLog(DingNotify.class);
 
+    @Value("#{config['notice.file.path']}")
+    private String filePath;
+
     @Value("#{config['notice.ding.URL']}")
     private String URL;
 
+    private JSONObject noticeJson;
 
     @Override
     public void notify(List<CbgGamer> gamers) throws ApiException {
+
+        File noticeFile = new File(this.filePath);
+        if (noticeFile.exists()) {
+            try {
+                FileInputStream fis = new FileInputStream(noticeFile);
+                byte[] bytes = new byte[fis.available()];
+                fis.read(bytes);
+                fis.close();
+                noticeJson = JSONObject.parseObject(new String(bytes, StandardCharsets.UTF_8));
+            } catch (Exception e) {
+                log.error("", e);
+            }
+        }
+        if (noticeJson == null) {
+            noticeJson = new JSONObject();
+        }
         DingTalkClient client = new DefaultDingTalkClient(this.URL);
         if (gamers != null && gamers.size() > 0) {
             for (CbgGamer gamer : gamers) {
+                if (noticeJson.containsKey(gamer.getTotalScore() + "-" + gamer.getPrice().toString())) {
+                    continue;
+                } else {
+                    noticeJson.put(gamer.getTotalScore() + "-" + gamer.getPrice().toString(), gamer.getServerName());
+                }
+
                 OapiRobotSendRequest request = new OapiRobotSendRequest();
 
                 /**
@@ -74,9 +107,22 @@ public class DingNotify implements Notify {
 
                 log.debug(response);
             }
+
+
         }
 
-
+        try {
+            if (!noticeFile.exists()) {
+                noticeFile.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(noticeFile);
+            byte[] bytes = noticeJson.toString(SerializerFeature.PrettyFormat).getBytes(StandardCharsets.UTF_8);
+            fos.write(bytes);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            log.error("", e);
+        }
     }
 
 }
