@@ -115,7 +115,7 @@ public class CbgFinder {
 
             try {
                 waitItemLoading(productDiv);
-                log.info(productDiv.getSize());
+                log.debug(productDiv.getSize());
 
                 List<WebElement> products = productDiv.findElements(By.cssSelector(".product-item.list-item.list-item-link"));
                 for (; doneIdx < products.size(); doneIdx++) {
