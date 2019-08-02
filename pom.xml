@@ -124,6 +124,35 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.42</version>
         </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/com.dingtalk.open/taobao-sdk-java-auto-source -->
+        <dependency>
+            <groupId>com.dingtalk.open</groupId>
+            <artifactId>taobao-sdk-java-auto-source</artifactId>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/taobao-sdk-java-auto_1479188381469-20190802.jar</systemPath>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.9</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.59</version>
+        </dependency>
+
+
+
+
+
+
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -166,6 +195,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
+                    <!-- 打包阶段，将 runtime 的jar包 copy 到 target/lib-->
                     <execution>
                         <id>copy</id>
                         <phase>package</phase>
@@ -177,6 +207,7 @@
                             <outputDirectory>target/lib/</outputDirectory>
                         </configuration>
                     </execution>
+                    <!-- 打包阶段，将 system 的jar包 copy 到 target/lib-->
                     <execution>
                         <id>copy-lib</id>
                         <phase>package</phase>
@@ -203,7 +234,7 @@
                             <mainClass>com.uv.Main</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>.</Class-Path>
+                            <Class-Path>. lib/taobao-sdk-java-auto_1479188381469-20190802.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                     <excludes>

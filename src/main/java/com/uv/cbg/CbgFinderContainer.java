@@ -1,5 +1,8 @@
 package com.uv.cbg;
 
+import com.taobao.api.ApiException;
+import com.uv.cbg.finder.CbgFinder;
+import com.uv.notify.Notify;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -24,6 +27,9 @@ public class CbgFinderContainer implements ApplicationContextAware {
 
     private int threadCount;
 
+    private Notify notify;
+
+    private String finderBeanName;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -35,7 +41,7 @@ public class CbgFinderContainer implements ApplicationContextAware {
      *
      * @return 搜索了几个区
      */
-    public int startCbgFinderSearch() {
+    public int startCbgFinderSearch() throws ApiException {
 
         ExecutorService executorService = Executors.newFixedThreadPool(this.getThreadCount());
 
@@ -58,16 +64,25 @@ public class CbgFinderContainer implements ApplicationContextAware {
             futures.add(executorService.submit(callable));
 
         }
+        List<CbgGamer> cbgGamers = new ArrayList<>();
         for (Future<CbgFindResult> future : futures) {
 
             try {
                 CbgFindResult result = future.get();
-                log.debug("find result:[" + result.getServerName() + "] find over！found [" + result.getFoundCount() + "]个游戏号");
+                log.info("find result:[" + (result.getServerName() == null ? "全区" : result.getServerName()) + "] find over！found [" + result.getFoundCount() + "]个性价比高的游戏号");
+                if (result.getFoundCount() > 0) {
+                    cbgGamers.addAll(result.getGamerList());
+                }
             } catch (InterruptedException | ExecutionException e) {
                 log.error("获取执行结果失败!", e);
             }
         }
         executorService.shutdown();
+
+        if (cbgGamers.size() > 0 || true) {
+            notify.notify(cbgGamers);
+        }
+
         return futures.size();
     }
 
@@ -80,14 +95,19 @@ public class CbgFinderContainer implements ApplicationContextAware {
      * @return Callable<CbgFindResult>
      */
     private Callable<CbgFindResult> createCallableCbgFinder(String sn) {
-        CbgFinder finder = ac.getBean("cbgFinder", CbgFinder.class);
+        CbgFinder finder = ac.getBean(this.getFinderBeanName(), CbgFinder.class);
         finder.getFilterBean().setServerName(sn);
         return () -> {
-            CbgFindResult findResult = new CbgFindResult(null, finder.getFilterBean().getServerName(), 0);
+            CbgFindResult findResult = new CbgFindResult(null, sn, 0);
             try {
+                //初步筛选条件下的搜索结果
                 List<CbgGamer> gamers = finder.searchCbg();
+
                 if (null != gamers && gamers.size() > 0) {
+                    //性价比过滤
                     List<CbgGamer> cbgFilterGamers = costFilter.filter(gamers);
+
+                    //如果过滤完 依然有找到的游戏号，则放入搜索结果
                     if (cbgFilterGamers != null && cbgFilterGamers.size() > 0) {
                         findResult.setGamerList(cbgFilterGamers);
                         findResult.setFoundCount(cbgFilterGamers.size());
@@ -95,7 +115,7 @@ public class CbgFinderContainer implements ApplicationContextAware {
                 }
 
             } catch (Throwable e) {
-                log.error("查找[" + sn + "]区的号失败!", e);
+                log.error("查找[" + (sn == null ? "全区" : sn) + "]的号失败!", e);
             }
             return findResult;
         };
@@ -123,5 +143,21 @@ public class CbgFinderContainer implements ApplicationContextAware {
 
     public void setThreadCount(int threadCount) {
         this.threadCount = threadCount;
+    }
+
+    public Notify getNotify() {
+        return notify;
+    }
+
+    public void setNotify(Notify notify) {
+        this.notify = notify;
+    }
+
+    public String getFinderBeanName() {
+        return finderBeanName;
+    }
+
+    public void setFinderBeanName(String finderBeanName) {
+        this.finderBeanName = finderBeanName;
     }
 }

@@ -1,46 +1,44 @@
-package com.uv.cbg;
+package com.uv.cbg.finder;
 
+import com.uv.cbg.CbgGamer;
+import com.uv.cbg.FilterBean;
 import com.uv.driver.MyDriver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author uvsun 2019-08-01 16:54
+ * @author uvsun 2019-08-02 20:52
  */
-public class CbgFinder {
+public class CbgFinderByWeb implements CbgFinder {
 
     private static final Log log = LogFactory.getLog(CbgFinder.class);
 
     @Value("#{config['driver.chrome.headless']}")
     private boolean isChromeHeadless;
 
-    @Value("#{config['cbgURL']}")
     private String cbgURL;
 
     private MyDriver myDriver;
     private FilterBean filterBean;
 
+    @Override
     public List<CbgGamer> searchCbg() throws IOException {
         List<CbgGamer> gamers = null;
 
         WebDriver webDriver = this.getMyDriver().getWebDriver();
-        long startTime = System.currentTimeMillis();
         //设置页面隐性等待加载时间10s
         webDriver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         //设置页面隐性等待元素查找时间10s，也是等待页面加载导致
         webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
-        Dimension windowDimension = webDriver.manage().window().getSize();
-        log.debug("browser size:" + windowDimension);
+
         // 让浏览器访问
         webDriver.get(this.cbgURL);
         // 获取 网页的 title
@@ -48,9 +46,6 @@ public class CbgFinder {
         log.debug(webDriver.getCurrentUrl());
 
         try {
-            //主动等待对象，可以调用until方法主动等待某个东西完成
-            WebDriverWait wait = new WebDriverWait(webDriver, 10);
-
             // 通过 id 找到 input 的 DOM
             WebElement el = webDriver.findElement(By.linkText("iOS角色"));
             el.click();
@@ -58,34 +53,7 @@ public class CbgFinder {
 //            this.setFilterOptions(webDriver);
             this.setAllFilterOptions(webDriver);
 
-            WebElement productDiv = null;
-            for (int i = 0; i < 5; i++) {
-                try {
-                    productDiv = webDriver.findElement(By.cssSelector(".infinite-scroll.list-block.border"));
-                } catch (Exception e) {
-                    log.error("筛选刚配置完，没找到查询游戏号的结果。等下再试");
-                    TimeUnit.SECONDS.sleep(1);
-                }
-            }
-            if (null == productDiv) {
-
-                log.error("配置完筛选条件，但是无法执行下去，退出本次爬虫！！！");
-
-            } else {
-
-                log.debug(productDiv.getSize());
-                gamers = loadItem((JavascriptExecutor) webDriver, windowDimension, productDiv);
-                log.debug("=======================================================");
-                for (CbgGamer gamer : gamers) {
-                    log.debug(gamer);
-                }
-                log.info("找到 " + gamers.size() + " 个游戏号,用时:" + ((System.currentTimeMillis() - startTime) / 1000) + "s");
-                if (!isChromeHeadless) {
-                    TimeUnit.SECONDS.sleep(60);
-                }
-
-            }
-
+            gamers = this.startSearch(webDriver);
 
         } catch (Throwable e) {
             log.error("发生异常", e);
@@ -97,6 +65,42 @@ public class CbgFinder {
     }
 
 
+    private List<CbgGamer> startSearch(WebDriver webDriver) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
+
+        List<CbgGamer> gamers = null;
+        WebElement productDiv = null;
+        Dimension windowDimension = webDriver.manage().window().getSize();
+        log.debug("browser size:" + windowDimension);
+        for (int i = 0; i < 5; i++) {
+            try {
+                productDiv = webDriver.findElement(By.cssSelector(".infinite-scroll.list-block.border"));
+            } catch (Exception e) {
+                log.error("筛选刚配置完，没找到查询游戏号的结果。等下再试");
+                TimeUnit.SECONDS.sleep(1);
+            }
+        }
+        if (null == productDiv) {
+
+            log.error("配置完筛选条件，但是无法执行下去，退出本次爬虫！！！");
+
+        } else {
+
+            log.debug(productDiv.getSize());
+            gamers = loadItem(webDriver, windowDimension, productDiv);
+            log.debug("=======================================================");
+            for (CbgGamer gamer : gamers) {
+                log.debug(gamer);
+            }
+            log.info("[" + (this.filterBean.getServerName() == null ? "全区" : this.filterBean.getServerName()) + "]找到 " + gamers.size() + " 个初步满足要求的游戏号,用时:" + ((System.currentTimeMillis() - startTime) / 1000) + "s");
+            if (!isChromeHeadless) {
+                TimeUnit.SECONDS.sleep(60);
+            }
+
+        }
+        return gamers;
+    }
+
     /**
      * 循环加载游戏账号
      * 章鱼 指挥说能打到5 来个辅助
@@ -106,7 +110,7 @@ public class CbgFinder {
      * @param productDiv
      * @throws InterruptedException
      */
-    private List<CbgGamer> loadItem(JavascriptExecutor driver, Dimension windowDimension, WebElement productDiv) throws InterruptedException {
+    private List<CbgGamer> loadItem(WebDriver driver, Dimension windowDimension, WebElement productDiv) {
         List<CbgGamer> gamers = new ArrayList<>();
 
         boolean isLoadingNew = true;
@@ -126,7 +130,7 @@ public class CbgFinder {
 
                 }
                 log.info("found count:" + doneIdx);
-                scrollBottom(driver, windowDimension, productDiv);
+                scrollBottom((JavascriptExecutor) driver, windowDimension, productDiv);
                 if (doneIdx == 0) {
                     WebElement notFound = productDiv.findElement(By.cssSelector(".empty-text"));
                     isLoadingNew = false;
@@ -212,8 +216,8 @@ public class CbgFinder {
         }
     }
 
-    private void setFilterServer(WebElement element, WebDriver driver) throws InterruptedException {
-        element.findElements(By.cssSelector(".sf-select.sf-select2")).get(0).click();
+    private void setFilterServer(WebElement element, WebDriver driver) {
+        element.findElement(By.cssSelector(".sf-select.sf-select2")).findElements(By.tagName("li")).get(1).click();
 
         WebElement serverEl = driver.findElement(By.className("rl-dialog-area-select")).findElement(By.className("site-container"));
         String[] server = this.getFilterBean().getServerName().split("-");
@@ -288,18 +292,22 @@ public class CbgFinder {
     }
 
 
+    @Override
     public FilterBean getFilterBean() {
         return filterBean;
     }
 
+    @Override
     public void setFilterBean(FilterBean filterBean) {
         this.filterBean = filterBean;
     }
 
+    @Override
     public String getCbgURL() {
         return cbgURL;
     }
 
+    @Override
     public void setCbgURL(String cbgURL) {
         this.cbgURL = cbgURL;
     }

@@ -32,6 +32,7 @@
 
     <!-- 爬虫类配置 -->
 
+
     <bean id="plantomjsWebDriver" class="com.uv.driver.MyPhantomJSWebDriver" scope="prototype">
         <property name="driverExecutorPath" value="${driver.plantomjs.executor.path}"/>
     </bean>
@@ -41,6 +42,7 @@
         <property name="headless" value="${driver.chrome.headless}"/>
     </bean>
 
+    <!-- 初步搜索筛选配置封装类-->
     <bean id="filter" class="com.uv.cbg.FilterBean" scope="prototype">
         <property name="level" value="${search.level.value}"/>
         <property name="menpais" value="${search.menpai.values}"/>
@@ -48,21 +50,38 @@
         <property name="personScore" value="${search.score.value.person_score}"/>
         <property name="showPublish" value="${search.showPublish}"/>
     </bean>
-
-    <bean id="cbgFinder" class="com.uv.cbg.CbgFinder" scope="prototype">
+    <!-- 根据搜索筛选配置，初步查找游戏账号 -->
+    <bean id="cbgFinderByWeb" class="com.uv.cbg.finder.CbgFinderByWeb" scope="prototype">
         <property name="myDriver" ref="chromeWebDriver"/>
         <property name="filterBean" ref="filter"/>
+        <property name="cbgURL" value="${my.cbg.URL}"/>
     </bean>
 
+    <!-- 只用于收集梦幻 大区 服务器信息的finder -->
+    <bean id="areaServerFetchFinder" class="com.uv.cbg.finder.MyAreaServerFetcher" scope="prototype">
+        <property name="myDriver" ref="chromeWebDriver"/>
+        <property name="filterBean" ref="filter"/>
+        <property name="cbgURL" value="${my.cbg.URL}"/>
+        <property name="areaStartIdx" value="0"/>
+        <property name="serverStartIdx" value="1"/>
+    </bean>
+
+
+    <!-- 初步找到帐号后根据此类的性价比配置，做过性价比过滤-->
     <bean id="costPerformanceFilter" class="com.uv.cbg.CostPerformanceFilter" init-method="setCP">
         <property name="totalCP" value="${cost_performance.total_score}"/>
         <property name="personCP" value="${cost_performance.person_score}"/>
     </bean>
 
+    <bean id="dingNotify" class="com.uv.notify.DingNotify"/>
+
+    <!-- 初步查找，性价比过滤，通知等所有功能的串联执行容器-->
     <bean id="cbgFinderContainer" class="com.uv.cbg.CbgFinderContainer">
         <property name="serverNames" value="${search.serverNames}"/>
         <property name="costFilter" ref="costPerformanceFilter"/>
+        <property name="notify" ref="dingNotify"/>
         <property name="threadCount" value="${thread.count}"/>
+        <property name="finderBeanName" value="areaServerFetchFinder"/>
     </bean>
 
 
