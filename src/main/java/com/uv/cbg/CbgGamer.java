@@ -40,7 +40,7 @@ public class CbgGamer {
     /**
      * 总评分
      */
-    private int allScore;
+    private int totalScore;
     /**
      * 人物评分
      */
@@ -51,7 +51,7 @@ public class CbgGamer {
     /**
      * 亮点
      */
-    private String hightLights;
+    private String highLights;
 
     /**
      * 收藏人数
@@ -111,10 +111,10 @@ public class CbgGamer {
         this.setLevel(Integer.valueOf(levelStr.substring(0, levelStr.length() - 1)));
         this.setServerName(gameDiv.findElement(By.className("server-name")).getText());
         List<WebElement> scores = gameDiv.findElements(By.className("basic_attrs_item"));
-        this.setAllScore(Integer.valueOf(scores.get(0).getText().split(":")[1]));
+        this.setTotalScore(Integer.valueOf(scores.get(0).getText().split(":")[1]));
         this.setPersonScore(Integer.valueOf(scores.get(1).getText().split(":")[1]));
         this.setPrice(new BigDecimal(gameDiv.findElement(By.className("price")).getText().substring(1).replaceAll(",", "")));
-        this.setHightLights(gameDiv.findElement(By.className("highlights")).getText().replaceAll("\n", ","));
+        this.setHighLights(gameDiv.findElement(By.className("highlights")).getText().replaceAll("\n", ","));
         this.setCollectCount(Integer.valueOf(gameDiv.findElement(By.className("collect")).getText().split("人")[0]));
 
     }
@@ -186,12 +186,12 @@ public class CbgGamer {
         isIOS = IOS;
     }
 
-    public int getAllScore() {
-        return allScore;
+    public int getTotalScore() {
+        return totalScore;
     }
 
-    public void setAllScore(int allScore) {
-        this.allScore = allScore;
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
     }
 
     public int getPersonScore() {
@@ -210,12 +210,12 @@ public class CbgGamer {
         this.price = price;
     }
 
-    public String getHightLights() {
-        return hightLights;
+    public String getHighLights() {
+        return highLights;
     }
 
-    public void setHightLights(String hightLights) {
-        this.hightLights = hightLights;
+    public void setHighLights(String highLights) {
+        this.highLights = highLights;
     }
 
     public int getCollectCount() {
@@ -238,10 +238,10 @@ public class CbgGamer {
                 ", serverName='" + serverName + '\'' +
                 ", level=" + level +
                 ", isIOS=" + isIOS +
-                ", allScore=" + allScore +
+                ", totalScore=" + totalScore +
                 ", personScore=" + personScore +
                 ", price=" + price +
-                ", hightLights='" + hightLights + '\'' +
+                ", highLights='" + highLights + '\'' +
                 ", collectCount=" + collectCount +
                 '}';
     }

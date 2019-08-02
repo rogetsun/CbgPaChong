@@ -20,6 +20,8 @@ public class CbgFinderContainer implements ApplicationContextAware {
 
     private String serverNames;
 
+    private CostPerformanceFilter costFilter;
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.ac = applicationContext;
@@ -32,33 +34,41 @@ public class CbgFinderContainer implements ApplicationContextAware {
      */
     public int startCbgFinderSearch() {
         ExecutorService executorService = null;
-        List<Future<String>> futures = new ArrayList<>();
+        List<Future<CbgFindResult>> futures = new ArrayList<>();
         if (null != serverNames && !"".equals(serverNames)) {
             String[] serverNameArray = serverNames.split(",");
             executorService = Executors.newFixedThreadPool(serverNameArray.length);
             for (String sn : serverNameArray) {
                 CbgFinder finder = ac.getBean("cbgFinder", CbgFinder.class);
                 finder.getFilterBean().setServerName(sn);
-                Callable<String> callable = () -> {
-                    String tmp = finder.getFilterBean().getServerName();
+                Callable<CbgFindResult> callable = () -> {
+                    CbgFindResult findResult = new CbgFindResult(null, finder.getFilterBean().getServerName(), 0);
                     try {
-                        finder.searchCbg();
+                        List<CbgGamer> gamers = finder.searchCbg();
+                        if (null != gamers && gamers.size() > 0) {
+                            List<CbgGamer> cbgFilterGamers = costFilter.filter(gamers);
+                            if (cbgFilterGamers != null && cbgFilterGamers.size() > 0) {
+                                findResult.setGamerList(cbgFilterGamers);
+                                findResult.setFoundCount(cbgFilterGamers.size());
+                            }
+                        }
+
                     } catch (Throwable e) {
                         log.error("查找[" + sn + "]区的号失败!", e);
                     }
-                    return tmp;
+                    return findResult;
                 };
                 futures.add(executorService.submit(callable));
             }
         }
-        for (Future<String> future : futures) {
-            String sn = null;
+        for (Future<CbgFindResult> future : futures) {
+
             try {
-                sn = future.get();
+                CbgFindResult result = future.get();
+                log.debug("[" + result.getServerName() + "] find over！found [" + result.getFoundCount() + "]个游戏号");
             } catch (InterruptedException | ExecutionException e) {
                 log.error("获取执行结果失败!", e);
             }
-            log.debug("[" + sn + "] find over！");
         }
         if (executorService != null) {
             executorService.shutdown();
@@ -72,5 +82,13 @@ public class CbgFinderContainer implements ApplicationContextAware {
 
     public void setServerNames(String serverNames) {
         this.serverNames = serverNames;
+    }
+
+    public CostPerformanceFilter getCostFilter() {
+        return costFilter;
+    }
+
+    public void setCostFilter(CostPerformanceFilter costFilter) {
+        this.costFilter = costFilter;
     }
 }

@@ -44,8 +44,8 @@
     <bean id="filter" class="com.uv.cbg.FilterBean" scope="prototype">
         <property name="level" value="${search.level.value}"/>
         <property name="menpais" value="${search.menpai.values}"/>
-        <property name="allScore" value="${search.score.value.allScore}"/>
-        <property name="personScore" value="${search.score.value.personScore}"/>
+        <property name="totalScore" value="${search.score.value.total_score}"/>
+        <property name="personScore" value="${search.score.value.person_score}"/>
         <property name="showPublish" value="${search.showPublish}"/>
     </bean>
 
@@ -54,8 +54,15 @@
         <property name="filterBean" ref="filter"/>
     </bean>
 
+    <bean id="costPerformanceFilter" class="com.uv.cbg.CostPerformanceFilter" init-method="setCP">
+        <property name="totalCP" value="${cost_performance.total_score}"/>
+        <property name="personCP" value="${cost_performance.person_score}"/>
+    </bean>
+
     <bean id="cbgFinderContainer" class="com.uv.cbg.CbgFinderContainer">
         <property name="serverNames" value="${search.serverNames}"/>
+        <property name="costFilter" ref="costPerformanceFilter"/>
     </bean>
+
 
 </beans>

@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
  * search.level.html.div.idx=4
  * <p>
  * #搜索条件：总评分
- * search.score.value.allScore=40000
+ * search.score.value.totalScore=40000
  * #搜索条件：人物评分
  * search.score.value.personScore=25555
  * search.score.html.div.idx=7
@@ -40,7 +40,7 @@ public class FilterBean {
 
     @Value("#{config['search.score.html.div.idx']}")
     private int scoreHtmlIdx;
-    private int allScore;
+    private int totalScore;
     private int personScore;
 
     @Value("#{config['search.menpai.html.div.idx']}")
@@ -88,12 +88,12 @@ public class FilterBean {
         this.level = level;
     }
 
-    public int getAllScore() {
-        return allScore;
+    public int getTotalScore() {
+        return totalScore;
     }
 
-    public void setAllScore(int allScore) {
-        this.allScore = allScore;
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
     }
 
     public int getPersonScore() {
@@ -125,7 +125,7 @@ public class FilterBean {
         return "FilterBean{" +
                 "serverName='" + serverName + '\'' +
                 ", level=" + level +
-                ", allScore=" + allScore +
+                ", totalScore=" + totalScore +
                 ", personScore=" + personScore +
                 ", menpais='" + menpais + '\'' +
                 ", isShowPublish=" + isShowPublish +

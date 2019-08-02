@@ -29,7 +29,9 @@ public class CbgFinder {
     private MyDriver myDriver;
     private FilterBean filterBean;
 
-    public void searchCbg() throws IOException {
+    public List<CbgGamer> searchCbg() throws IOException {
+        List<CbgGamer> gamers = null;
+
         WebDriver webDriver = this.getMyDriver().getWebDriver();
         long startTime = System.currentTimeMillis();
         //设置页面隐性等待加载时间10s
@@ -76,7 +78,7 @@ public class CbgFinder {
             } else {
 
                 log.debug(productDiv.getSize());
-                List<CbgGamer> gamers = loadItem((JavascriptExecutor) webDriver, windowDimension, productDiv);
+                gamers = loadItem((JavascriptExecutor) webDriver, windowDimension, productDiv);
                 log.debug("=======================================================");
                 for (CbgGamer gamer : gamers) {
                     log.debug(gamer);
@@ -89,12 +91,12 @@ public class CbgFinder {
             }
 
 
-        } catch (Exception e) {
-            log.debug("发生异常");
-            e.printStackTrace();
+        } catch (Throwable e) {
+            log.error("发生异常", e);
         } finally {
             this.getMyDriver().stop();
         }
+        return gamers;
 
     }
 
@@ -186,7 +188,7 @@ public class CbgFinder {
             log.debug("set level");
             this.setFilterLevel(filters.get(filterBean.getLevelHtmlIdx()));
         }
-        if (filterBean.getAllScore() != 0 || filterBean.getPersonScore() != 0) {
+        if (filterBean.getTotalScore() != 0 || filterBean.getPersonScore() != 0) {
             log.debug("set score");
             this.setFilterScore(filters.get(filterBean.getScoreHtmlIdx()));
         }
@@ -245,8 +247,8 @@ public class CbgFinder {
             WebElement input = element.findElement(By.name("role_score"));
             input.sendKeys(this.getFilterBean().getPersonScore() + "");
         }
-        if (this.getFilterBean().getAllScore() != 0) {
-            element.findElement(By.name("total_score")).sendKeys(this.getFilterBean().getAllScore() + "");
+        if (this.getFilterBean().getTotalScore() != 0) {
+            element.findElement(By.name("total_score")).sendKeys(this.getFilterBean().getTotalScore() + "");
         }
         element.click();
     }
@@ -277,15 +279,15 @@ public class CbgFinder {
 
             }
             if ("评分".equals(filter.getText())) {
-                if (this.getFilterBean().getAllScore() == 0 && this.getFilterBean().getPersonScore() == 0) {
+                if (this.getFilterBean().getTotalScore() == 0 && this.getFilterBean().getPersonScore() == 0) {
                     continue;
                 }
                 filter.click();
                 if (this.getFilterBean().getPersonScore() != 0) {
                     driver.findElement(By.name("role_score")).sendKeys(this.getFilterBean().getPersonScore() + "");
                 }
-                if (this.getFilterBean().getAllScore() != 0) {
-                    driver.findElement(By.name("total_score")).sendKeys(this.getFilterBean().getAllScore() + "");
+                if (this.getFilterBean().getTotalScore() != 0) {
+                    driver.findElement(By.name("total_score")).sendKeys(this.getFilterBean().getTotalScore() + "");
                 }
                 driver.findElement(By.linkText("确定")).click();
                 continue;
