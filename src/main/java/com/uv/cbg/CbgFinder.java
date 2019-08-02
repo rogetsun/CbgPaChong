@@ -44,19 +44,15 @@ public class CbgFinder {
         // 让浏览器访问
         webDriver.get(this.cbgURL);
         // 获取 网页的 title
-        log.debug(new Date());
         log.debug(" Page title is: " + webDriver.getTitle());
         log.debug(webDriver.getCurrentUrl());
-        log.debug(new Date());
+
         try {
             //主动等待对象，可以调用until方法主动等待某个东西完成
             WebDriverWait wait = new WebDriverWait(webDriver, 10);
 
             // 通过 id 找到 input 的 DOM
             WebElement el = webDriver.findElement(By.linkText("iOS角色"));
-            log.debug(new Date());
-            log.debug(el);
-            log.debug(el.getText());
             el.click();
 
 //            this.setFilterOptions(webDriver);
@@ -124,15 +120,10 @@ public class CbgFinder {
                 List<WebElement> products = productDiv.findElements(By.cssSelector(".product-item.list-item.list-item-link"));
                 for (; doneIdx < products.size(); doneIdx++) {
                     WebElement p = products.get(doneIdx);
-                    try {
 
-                        CbgGamer gamer = new CbgGamer(p);
-                        gamers.add(gamer);
-                    } catch (Exception e) {
-                        log.error("解析出问题！", e);
-                        String html = p.getAttribute("outerHTML");
-                        log.error("解析出问题HTML：" + html);
-                    }
+                    CbgGamer gamer = new CbgGamer(p);
+                    gamers.add(gamer);
+
                 }
                 log.info("found count:" + doneIdx);
                 scrollBottom(driver, windowDimension, productDiv);

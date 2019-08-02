@@ -1,5 +1,7 @@
 package com.uv.cbg;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -10,6 +12,8 @@ import java.util.List;
  * @author uvsun 2019-08-02 00:08
  */
 public class CbgGamer {
+    private static final Log log = LogFactory.getLog(CbgGamer.class);
+
     private int id;
     private String name;
     /**
@@ -92,30 +96,40 @@ public class CbgGamer {
      */
     public CbgGamer(WebElement gameDiv) {
 
-        List<WebElement> icons = gameDiv.findElements(By.className("icon"));
-        for (WebElement icon : icons) {
-            if (icon.getAttribute("class").contains("icon-bargin")) {
-                this.setBargin(true);
+        try {
+            List<WebElement> icons = gameDiv.findElements(By.className("icon"));
+            for (WebElement icon : icons) {
+                if (icon.getAttribute("class").contains("icon-bargin")) {
+                    this.setBargin(true);
+                }
+                if (icon.getAttribute("class").contains("icon-publicity")) {
+                    this.setPublished(true);
+                }
+                if (icon.getAttribute("class").contains("icon-ios")) {
+                    this.setIOS(true);
+                }
             }
-            if (icon.getAttribute("class").contains("icon-publicity")) {
-                this.setPublished(true);
+
+            this.setMenPai(gameDiv.findElement(By.className("name")).getText());
+
+            String levelStr = gameDiv.findElement(By.className("level")).getText();
+            this.setLevel(Integer.valueOf(levelStr.substring(0, levelStr.length() - 1)));
+            this.setServerName(gameDiv.findElement(By.className("server-name")).getText());
+            List<WebElement> scores = gameDiv.findElements(By.className("basic_attrs_item"));
+            this.setTotalScore(Integer.valueOf(scores.get(0).getText().split(":")[1]));
+            this.setPersonScore(Integer.valueOf(scores.get(1).getText().split(":")[1]));
+            this.setPrice(new BigDecimal(gameDiv.findElement(By.className("price")).getText().substring(1).replaceAll(",", "")));
+            this.setHighLights(gameDiv.findElement(By.className("highlights")).getText().replaceAll("\n", ","));
+            WebElement tmpEl = gameDiv.findElement(By.className("info")).findElements(By.className("row")).get(2);
+
+            if(tmpEl.getAttribute("innerHTML").contains("collect")){
+                this.setCollectCount(Integer.valueOf(tmpEl.findElement(By.className("collect")).getText().split("人")[0]));
             }
-            if (icon.getAttribute("class").contains("icon-ios")) {
-                this.setIOS(true);
-            }
+
+        } catch (Throwable e) {
+            log.error("解析帐号信息失败,", e);
+            log.error("帐号HTML:" + gameDiv.getAttribute("outerHTML"));
         }
-
-        this.setMenPai(gameDiv.findElement(By.className("name")).getText());
-
-        String levelStr = gameDiv.findElement(By.className("level")).getText();
-        this.setLevel(Integer.valueOf(levelStr.substring(0, levelStr.length() - 1)));
-        this.setServerName(gameDiv.findElement(By.className("server-name")).getText());
-        List<WebElement> scores = gameDiv.findElements(By.className("basic_attrs_item"));
-        this.setTotalScore(Integer.valueOf(scores.get(0).getText().split(":")[1]));
-        this.setPersonScore(Integer.valueOf(scores.get(1).getText().split(":")[1]));
-        this.setPrice(new BigDecimal(gameDiv.findElement(By.className("price")).getText().substring(1).replaceAll(",", "")));
-        this.setHighLights(gameDiv.findElement(By.className("highlights")).getText().replaceAll("\n", ","));
-        this.setCollectCount(Integer.valueOf(gameDiv.findElement(By.className("collect")).getText().split("人")[0]));
 
     }
 

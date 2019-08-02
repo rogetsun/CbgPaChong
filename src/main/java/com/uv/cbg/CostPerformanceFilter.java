@@ -1,5 +1,7 @@
 package com.uv.cbg;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
@@ -10,6 +12,8 @@ import java.util.List;
  * @author uvsun 2019-08-02 07:14
  */
 public class CostPerformanceFilter {
+
+    private static final Log log = LogFactory.getLog(CostPerformanceFilter.class);
 
     @Value("#{config['cost_performance.person_score']}")
     private String personCP;
@@ -37,30 +41,36 @@ public class CostPerformanceFilter {
 
         for (CbgGamer gamer : gamerList) {
 
-            if (hasPersonCP) {
+            try {
+                if (hasPersonCP) {
 
-                for (CostPerformance cp : personCPList) {
+                    for (CostPerformance cp : personCPList) {
 
-                    if (cp.isCost(new BigDecimal(gamer.getPersonScore()), gamer.getPrice())) {
+                        if (cp.isCost(new BigDecimal(gamer.getPersonScore()), gamer.getPrice())) {
 
-                        ret.add(gamer);
-                        break;
+                            ret.add(gamer);
+                            break;
 
-                    }
-
-                }
-            }
-            if (hasTotalCP) {
-                for (CostPerformance cp : totalCPList) {
-
-                    if (cp.isCost(new BigDecimal(gamer.getTotalScore()), gamer.getPrice())) {
-
-                        ret.add(gamer);
-                        break;
+                        }
 
                     }
-
                 }
+                if (hasTotalCP) {
+                    for (CostPerformance cp : totalCPList) {
+
+                        if (cp.isCost(new BigDecimal(gamer.getTotalScore()), gamer.getPrice())) {
+
+                            ret.add(gamer);
+                            break;
+
+                        }
+
+                    }
+                }
+
+            } catch (Throwable e) {
+                log.error("比较性价比失败，", e);
+                log.error("失败游戏号:" + gamer);
             }
         }
         if (ret.size() > 0) {
@@ -84,7 +94,7 @@ public class CostPerformanceFilter {
             }
         }
 
-        if(totalCP != null && !"".equals(totalCP)){
+        if (totalCP != null && !"".equals(totalCP)) {
             String[] pcpArray = totalCP.split(",");
 
             for (String pcp : pcpArray) {
@@ -93,7 +103,7 @@ public class CostPerformanceFilter {
             }
 
             if (totalCPList.size() > 0) {
-                hasTotalCP= true;
+                hasTotalCP = true;
             }
         }
 

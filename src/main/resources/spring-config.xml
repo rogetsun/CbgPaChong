@@ -62,6 +62,7 @@
     <bean id="cbgFinderContainer" class="com.uv.cbg.CbgFinderContainer">
         <property name="serverNames" value="${search.serverNames}"/>
         <property name="costFilter" ref="costPerformanceFilter"/>
+        <property name="threadCount" value="${thread.count}"/>
     </bean>
 
 
