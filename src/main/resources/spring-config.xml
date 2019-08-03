@@ -40,6 +40,12 @@
     <bean id="chromeWebDriver" class="com.uv.driver.MyChromeWebDriver" scope="prototype">
         <property name="driverExecutorPath" value="${driver.chrome.executor.path}"/>
         <property name="headless" value="${driver.chrome.headless}"/>
+        <property name="port" value="10080"/>
+    </bean>
+
+    <bean id="chromeRemoteWebDriver" class="com.uv.driver.MyChromeRemoteWebDriver" scope="prototype">
+        <property name="driverExecutorPath" value="${driver.chrome.executor.path}"/>
+        <property name="port" value="10080"/>
     </bean>
 
     <!-- 初步搜索筛选配置封装类-->

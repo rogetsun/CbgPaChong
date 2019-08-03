@@ -21,15 +21,22 @@ public class MyChromeRemoteWebDriver implements MyDriver {
 
     private String driverExecutorPath;
 
+    private int port;
+
     @Override
     public WebDriver getWebDriver() throws IOException {
 
         System.setProperty("webdriver.chrome.driver", this.getDriverExecutorPath());
         // 创建一个 ChromeDriver 的接口，用于连接 Chrome（chromedriver.exe 的路径可以任意放置，只要在newFile（）的时候写入你放的路径即可）
-        service = new ChromeDriverService.Builder()
+        ChromeDriverService.Builder builder = new ChromeDriverService.Builder()
                 .usingDriverExecutable(new File(this.getDriverExecutorPath()))
-                .withSilent(true)
-                .usingAnyFreePort().build();
+                .withSilent(true);
+        if (port != 0) {
+            builder.usingPort(port);
+        } else {
+            builder.usingAnyFreePort();
+        }
+        service = builder.build();
         service.start();
         //创建一个 Chrome 的浏览器实例.第一个参数：表示服务器的地址。第二个参数：表示预期的执行对象，其他的浏览器都可以以此类推
         this.driver = new RemoteWebDriver(new URL("http://127.0.0.1:4444/wd/hub/"), DesiredCapabilities.chrome());
@@ -61,5 +68,13 @@ public class MyChromeRemoteWebDriver implements MyDriver {
 
     public void setDriverExecutorPath(String driverExecutorPath) {
         this.driverExecutorPath = driverExecutorPath;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 }
