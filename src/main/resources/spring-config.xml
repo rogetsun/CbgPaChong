@@ -32,7 +32,9 @@
 
     <!-- 爬虫类配置 -->
 
-
+    <!--
+        chrome驱动
+     -->
     <bean id="plantomjsWebDriver" class="com.uv.driver.MyPhantomJSWebDriver" scope="prototype">
         <property name="driverExecutorPath" value="${driver.plantomjs.executor.path}"/>
     </bean>
@@ -48,6 +50,7 @@
         <property name="port" value="10080"/>
     </bean>
 
+
     <!-- 初步搜索筛选配置封装类-->
     <bean id="filter" class="com.uv.cbg.FilterBean" scope="prototype">
         <property name="level" value="${search.level.value}"/>
@@ -56,6 +59,10 @@
         <property name="personScore" value="${search.score.value.person_score}"/>
         <property name="showPublish" value="${search.showPublish}"/>
     </bean>
+
+    <!--
+        finder
+     -->
     <!-- 根据搜索筛选配置，初步查找游戏账号 -->
     <bean id="cbgFinderByWeb" class="com.uv.cbg.finder.CbgFinderByWeb" scope="prototype">
         <property name="myDriver" ref="chromeWebDriver"/>
@@ -72,8 +79,14 @@
         <property name="serverStartIdx" value="1"/>
     </bean>
 
+    <bean id="requestFinder" class="com.uv.cbg.finder.CbgFinderByRequest" scope="prototype" init-method="loadAreaServerConfig">
+        <property name="cbgURL" value="${my.cbg.data.URL}"/>
+        <property name="filterBean" ref="filter"/>
+    </bean>
 
-    <!-- 初步找到帐号后根据此类的性价比配置，做过性价比过滤-->
+    <!--
+        初步找到帐号后根据此类的性价比配置，做过性价比过滤
+    -->
     <bean id="costPerformanceFilter" class="com.uv.cbg.CostPerformanceFilter" init-method="setCP">
         <property name="totalCP" value="${cost_performance.total_score}"/>
         <property name="personCP" value="${cost_performance.person_score}"/>
@@ -87,7 +100,7 @@
         <property name="costFilter" ref="costPerformanceFilter"/>
         <property name="notify" ref="dingNotify"/>
         <property name="threadCount" value="${thread.count}"/>
-        <property name="finderBeanName" value="cbgFinderByWeb"/>
+        <property name="finderBeanName" value="requestFinder"/>
     </bean>
 
 

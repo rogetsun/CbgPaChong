@@ -69,34 +69,13 @@ public class DingNotify implements Notify {
                  */
                 request.setMsgtype("link");
                 OapiRobotSendRequest.Link link = new OapiRobotSendRequest.Link();
-//                StringBuilder url = new StringBuilder().append("https://my.cbg.163.com/cgi/mweb/pl/role?platform_type=1");
-//                switch (gamer.getLevel()) {
-//                    case 0:
-//                        url.append("&equip_level_min=69&equip_level_max=69");
-//                        break;
-//                    case 1:
-//                        url.append("&equip_level_min=70&equip_level_max=89");
-//                        break;
-//                    case 2:
-//                        url.append("&equip_level_min=90&equip_level_max=119");
-//                        break;
-//                    default:
-//
-//                }
-//                if (gamer.getPersonScore() > 0) {
-//                    url.append("&role_score=").append(gamer.getPersonScore());
-//                }
-//                if (gamer.getTotalScore() > 0) {
-//                    url.append("&total_score=").append(gamer.getTotalScore());
-//                }
-
                 link.setMessageUrl(gamer.getUrl());
                 link.setPicUrl("");
-                link.setTitle("[" + gamer.getMenPai() + "]" + ":" + gamer.getPrice().toString());
+                link.setTitle("[" + gamer.getSchoolName() + "]" + ":" + gamer.getPrice().toString());
 
                 link.setText(
                         gamer.getServerName()
-                                + "[" + gamer.getMenPai() + "]"
+                                + "[" + gamer.getSchoolName() + "]"
                                 + gamer.getTotalScore() + "/" + gamer.getPersonScore()
                                 + ":"
                                 + gamer.getPrice().toString()

@@ -14,21 +14,25 @@ import java.util.List;
 public class CbgGamer {
     private static final Log log = LogFactory.getLog(CbgGamer.class);
 
-    private int id;
+    private int serverId;
     private String name;
+    /**
+     * 网页访问的URL
+     */
     private String url;
+    /**
+     * js ajax请求获取详细数据的URL
+     */
+    private String detailDataUrl;
     /**
      * 门派
      */
-    private String menPai;
+    private String schoolName;
     /**
      * 是否公示，true：公示期。
      */
     private boolean isPublished;
-    /**
-     * 是否可以还价
-     */
-    private boolean isBargin;
+
     /**
      * 区
      */
@@ -63,6 +67,15 @@ public class CbgGamer {
      */
     private int collectCount;
 
+    /**
+     * 能否搞价
+     */
+    private boolean allowBargain;
+
+    /**
+     * 游戏账号商品编号
+     */
+    private String gameOrderSn;
 
     /**
      * <div class="info">
@@ -101,7 +114,7 @@ public class CbgGamer {
             List<WebElement> icons = gameDiv.findElements(By.className("icon"));
             for (WebElement icon : icons) {
                 if (icon.getAttribute("class").contains("icon-bargin")) {
-                    this.setBargin(true);
+                    this.setAllowBargain(true);
                 }
                 if (icon.getAttribute("class").contains("icon-publicity")) {
                     this.setPublished(true);
@@ -111,7 +124,7 @@ public class CbgGamer {
                 }
             }
 
-            this.setMenPai(gameDiv.findElement(By.className("name")).getText());
+            this.setSchoolName(gameDiv.findElement(By.className("name")).getText());
 
             String levelStr = gameDiv.findElement(By.className("level")).getText();
             this.setLevel(Integer.valueOf(levelStr.substring(0, levelStr.length() - 1)));
@@ -123,7 +136,7 @@ public class CbgGamer {
             this.setHighLights(gameDiv.findElement(By.className("highlights")).getText().replaceAll("\n", ","));
             WebElement tmpEl = gameDiv.findElement(By.className("info")).findElements(By.className("row")).get(2);
 
-            if(tmpEl.getAttribute("innerHTML").contains("collect")){
+            if (tmpEl.getAttribute("innerHTML").contains("collect")) {
                 this.setCollectCount(Integer.valueOf(tmpEl.findElement(By.className("collect")).getText().split("人")[0]));
             }
 
@@ -144,12 +157,13 @@ public class CbgGamer {
     public void setUrl(String url) {
         this.url = url;
     }
-    public int getId() {
-        return id;
+
+    public int getServerId() {
+        return serverId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setServerId(int serverId) {
+        this.serverId = serverId;
     }
 
     public String getName() {
@@ -160,12 +174,12 @@ public class CbgGamer {
         this.name = name;
     }
 
-    public String getMenPai() {
-        return menPai;
+    public String getSchoolName() {
+        return schoolName;
     }
 
-    public void setMenPai(String menPai) {
-        this.menPai = menPai;
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
     }
 
     public boolean isPublished() {
@@ -174,14 +188,6 @@ public class CbgGamer {
 
     public void setPublished(boolean published) {
         isPublished = published;
-    }
-
-    public boolean isBargin() {
-        return isBargin;
-    }
-
-    public void setBargin(boolean bargin) {
-        isBargin = bargin;
     }
 
     public String getServerName() {
@@ -248,15 +254,38 @@ public class CbgGamer {
         this.collectCount = collectCount;
     }
 
+    public boolean isAllowBargain() {
+        return allowBargain;
+    }
+
+    public void setAllowBargain(boolean allowBargain) {
+        this.allowBargain = allowBargain;
+    }
+
+    public String getGameOrderSn() {
+        return gameOrderSn;
+    }
+
+    public void setGameOrderSn(String gameOrderSn) {
+        this.gameOrderSn = gameOrderSn;
+    }
+
+    public String getDetailDataUrl() {
+        return detailDataUrl;
+    }
+
+    public void setDetailDataUrl(String detailDataUrl) {
+        this.detailDataUrl = detailDataUrl;
+    }
 
     @Override
     public String toString() {
         return "CbgGamer{" +
-                "id=" + id +
+                "serverId=" + serverId +
                 ", name='" + name + '\'' +
-                ", menPai='" + menPai + '\'' +
+                ", url='" + url + '\'' +
+                ", schoolName='" + schoolName + '\'' +
                 ", isPublished=" + isPublished +
-                ", isBargin=" + isBargin +
                 ", serverName='" + serverName + '\'' +
                 ", level=" + level +
                 ", isIOS=" + isIOS +
@@ -265,6 +294,8 @@ public class CbgGamer {
                 ", price=" + price +
                 ", highLights='" + highLights + '\'' +
                 ", collectCount=" + collectCount +
+                ", allowBargain=" + allowBargain +
+                ", gameOrderSn='" + gameOrderSn + '\'' +
                 '}';
     }
 
