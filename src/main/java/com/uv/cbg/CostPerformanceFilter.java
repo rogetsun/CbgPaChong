@@ -27,7 +27,6 @@ public class CostPerformanceFilter {
     private boolean hasTotalCP;
 
     public List<CbgGamer> filter(List<CbgGamer> gamerList) {
-
         if (!hasPersonCP && !hasTotalCP) {
             return null;
         }
@@ -37,8 +36,11 @@ public class CostPerformanceFilter {
             return null;
         }
 
+        log.debug("CPFilter:" + gamerList.size());
+
         List<CbgGamer> ret = new ArrayList<>();
 
+        FILTER:
         for (CbgGamer gamer : gamerList) {
 
             try {
@@ -49,7 +51,7 @@ public class CostPerformanceFilter {
                         if (cp.isCost(new BigDecimal(gamer.getPersonScore()), gamer.getPrice())) {
 
                             ret.add(gamer);
-                            break;
+                            continue FILTER;
 
                         }
 
@@ -61,7 +63,7 @@ public class CostPerformanceFilter {
                         if (cp.isCost(new BigDecimal(gamer.getTotalScore()), gamer.getPrice())) {
 
                             ret.add(gamer);
-                            break;
+                            continue FILTER;
 
                         }
 

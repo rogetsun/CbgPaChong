@@ -72,6 +72,9 @@ public class CbgFinderContainer implements ApplicationContextAware {
                 log.info("find result:[" + (result.getServerName() == null ? "全区" : result.getServerName()) + "] find over！found [" + result.getFoundCount() + "]个性价比高的游戏号");
                 if (result.getFoundCount() > 0) {
                     cbgGamers.addAll(result.getGamerList());
+                    for (CbgGamer gamer : result.getGamerList()) {
+                        log.debug((result.getServerName() == null ? "全区" : result.getServerName()) + ":" + gamer);
+                    }
                 }
             } catch (InterruptedException | ExecutionException e) {
                 log.error("获取执行结果失败!", e);

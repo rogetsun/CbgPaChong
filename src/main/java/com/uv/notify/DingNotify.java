@@ -52,9 +52,9 @@ public class DingNotify implements Notify {
         if (noticeJson == null) {
             noticeJson = new JSONObject();
         }
-        DingTalkClient client = new DefaultDingTalkClient(this.URL);
         if (gamers != null && gamers.size() > 0) {
             for (CbgGamer gamer : gamers) {
+                DingTalkClient client = new DefaultDingTalkClient(this.URL);
                 if (noticeJson.containsKey(gamer.getTotalScore() + "-" + gamer.getPrice().toString())) {
                     continue;
                 } else {
