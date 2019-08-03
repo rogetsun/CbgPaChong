@@ -2,10 +2,7 @@ package com.uv.driver;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
-
-import java.io.File;
 
 /**
  * @author uvsun 2019-08-02 01:09
@@ -32,20 +29,26 @@ public class MyChromeWebDriver implements MyDriver {
         ChromeOptions chromeOptions = new ChromeOptions();
         //设置 chrome 的无头模式
         chromeOptions.setHeadless(this.isHeadless);
-        chromeOptions.setAcceptInsecureCerts(true);
+        // disabling extensions
+        chromeOptions.addArguments("--disable-extensions");
+        // applicable to windows os only
+        chromeOptions.addArguments("--disable-gpu");
+        // overcome limited resource problems
+        chromeOptions.addArguments("--disable-dev-shm-usage");
+        chromeOptions.addArguments("--no-sandbox");
 
-        ChromeDriverService.Builder builder = new ChromeDriverService.Builder()
-                .usingDriverExecutable(new File(this.getDriverExecutorPath()))
-                .withSilent(true);
-        if (port != 0) {
-            builder.usingPort(port);
-        } else {
-            builder.usingAnyFreePort();
-        }
-        ChromeDriverService service = builder.build();
+//        ChromeDriverService.Builder builder = new ChromeDriverService.Builder()
+//                .usingDriverExecutable(new File(this.getDriverExecutorPath()))
+//                .withSilent(true);
+//        if (port != 0) {
+//            builder.usingPort(port);
+//        } else {
+//            builder.usingAnyFreePort();
+//        }
+//        ChromeDriverService service = builder.build();
 
         //启动一个 chrome 实例
-        this.driver = new ChromeDriver(service, chromeOptions);
+        this.driver = new ChromeDriver(chromeOptions);
         return driver;
 
 

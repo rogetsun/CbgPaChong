@@ -1,5 +1,6 @@
 package com.uv.cbg;
 
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -27,6 +28,15 @@ import org.springframework.beans.factory.annotation.Value;
  * <p>
  * search.showPublish=false
  * search.showPublish.html.div.idx=2
+ * <p>
+ * https://my.cbg.163.com/cgi/mweb/pl/role?
+ * platform_type=1 平台 1：iOS 2：安卓
+ * &equip_level_min=70&equip_level_max=89
+ * &total_score=40000&role_score=20000 总评分， 角色评分
+ * &serverid=170 服务器ID
+ * &pass_fair_show= 0 只显示公示期， 1 不现实公示期
+ * &school=2,1,8 门派
+ * &jm_active_num=12 经脉
  */
 public class FilterBean {
 
@@ -43,9 +53,15 @@ public class FilterBean {
     private int totalScore;
     private int personScore;
 
-    @Value("#{config['search.menpai.html.div.idx']}")
-    private int menpaiHtmlIdx;
-    private String menpais;
+    @Value("#{config['search.school.html.div.idx']}")
+    private int schoolHtmlIdx;
+    private String schools;
+    /**
+     * 一个json对象字符串，藏宝阁数据url参数中门派ID 对应 在web界面 门派li在ul中的下标位置idx
+     */
+    @Value("#{config['search.school.mapper']}")
+    private String schoolLiDetailIdx;
+    private JSONObject schoolLiDetailJson;
 
     @Value("#{config['search.showPublish.html.div.idx']}")
     private int showPublishHtmlIdx;
@@ -64,9 +80,21 @@ public class FilterBean {
         return scoreHtmlIdx;
     }
 
-    public int getMenpaiHtmlIdx() {
-        return menpaiHtmlIdx;
+    public int getSchoolHtmlIdx() {
+        return schoolHtmlIdx;
     }
+
+    public int getSchoolLiDetailIdx(int menpaiID) {
+        if (schoolLiDetailJson == null) {
+            schoolLiDetailJson = JSONObject.parseObject(this.schoolLiDetailIdx);
+        }
+        return schoolLiDetailJson.getInteger(String.valueOf(menpaiID));
+    }
+
+    public int getSchoolLiDetailIdx(String menpaiID) {
+        return this.getSchoolLiDetailIdx(Integer.valueOf(menpaiID));
+    }
+
 
     public int getShowPublishHtmlIdx() {
         return showPublishHtmlIdx;
@@ -104,12 +132,12 @@ public class FilterBean {
         this.personScore = personScore;
     }
 
-    public String getMenpais() {
-        return menpais;
+    public String getSchools() {
+        return schools;
     }
 
-    public void setMenpais(String menpais) {
-        this.menpais = menpais;
+    public void setSchools(String schools) {
+        this.schools = schools;
     }
 
     public boolean isShowPublish() {
@@ -127,7 +155,7 @@ public class FilterBean {
                 ", level=" + level +
                 ", totalScore=" + totalScore +
                 ", personScore=" + personScore +
-                ", menpais='" + menpais + '\'' +
+                ", schools='" + schools + '\'' +
                 ", isShowPublish=" + isShowPublish +
                 '}';
     }

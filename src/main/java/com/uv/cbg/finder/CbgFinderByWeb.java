@@ -188,9 +188,9 @@ public class CbgFinderByWeb implements CbgFinder {
             log.debug("set score");
             this.setFilterScore(filters.get(filterBean.getScoreHtmlIdx()));
         }
-        if (filterBean.getMenpais() != null && !"".equals(filterBean.getMenpais())) {
+        if (filterBean.getSchools() != null && !"".equals(filterBean.getSchools())) {
             log.debug("set menpai");
-            this.setFilterMenpai(filters.get(filterBean.getMenpaiHtmlIdx()));
+            this.setFilterMenpai(filters.get(filterBean.getSchoolHtmlIdx()));
         }
         if (!filterBean.isShowPublish()) {
             log.debug("set publish");
@@ -230,10 +230,10 @@ public class CbgFinderByWeb implements CbgFinder {
     }
 
     private void setFilterMenpai(WebElement element) {
-        String[] menpaiArray = this.getFilterBean().getMenpais().split(",");
+        String[] menpaiArray = this.getFilterBean().getSchools().split(",");
         List<WebElement> mpList = element.findElement(By.cssSelector(".sf-select.sf-select3")).findElements(By.tagName("li"));
         for (String menpai : menpaiArray) {
-            mpList.get(Integer.valueOf(menpai)).click();
+            mpList.get(this.filterBean.getSchoolLiDetailIdx(menpai)).click();
         }
     }
 
@@ -250,7 +250,7 @@ public class CbgFinderByWeb implements CbgFinder {
     }
 
     private void setFilterLevel(WebElement element) {
-        element.findElement(By.cssSelector(".sf-select.sf-select3")).findElements(By.tagName("li")).get(filterBean.getLevel()).click();
+        element.findElement(By.cssSelector(".sf-select.sf-select3")).findElements(By.tagName("li")).get(filterBean.getLevel() - 1).click();
     }
 
     /**
@@ -269,7 +269,7 @@ public class CbgFinderByWeb implements CbgFinder {
                 filter.click();
                 WebElement optionDiv = driver.findElement(By.cssSelector("ul.sf-select.sf-select3"));
                 List<WebElement> liList = optionDiv.findElements(By.tagName("li"));
-                liList.get(this.getFilterBean().getLevel()).click();
+                liList.get(this.getFilterBean().getLevel() - 1).click();
                 driver.findElement(By.linkText("确定")).click();
                 continue;
 

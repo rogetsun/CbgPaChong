@@ -51,7 +51,7 @@
     <!-- 初步搜索筛选配置封装类-->
     <bean id="filter" class="com.uv.cbg.FilterBean" scope="prototype">
         <property name="level" value="${search.level.value}"/>
-        <property name="menpais" value="${search.menpai.values}"/>
+        <property name="schools" value="${search.school.values}"/>
         <property name="totalScore" value="${search.score.value.total_score}"/>
         <property name="personScore" value="${search.score.value.person_score}"/>
         <property name="showPublish" value="${search.showPublish}"/>
