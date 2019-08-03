@@ -58,7 +58,7 @@ public class DingNotify implements Notify {
                 if (noticeJson.containsKey(gamer.getTotalScore() + "-" + gamer.getPrice().toString())) {
                     continue;
                 } else {
-                    noticeJson.put(gamer.getTotalScore() + "-" + gamer.getPrice().toString(), gamer.getServerName());
+                    noticeJson.put(gamer.getTotalScore() + "-" + gamer.getPrice().toString(), "[" + gamer.getServerName() + "]" + gamer.getSchoolName());
                 }
 
                 OapiRobotSendRequest request = new OapiRobotSendRequest();
