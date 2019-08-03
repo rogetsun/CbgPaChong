@@ -192,7 +192,7 @@
                 <executions>
                     <!-- 打包阶段，将 runtime 的jar包 copy 到 target/lib-->
                     <execution>
-                        <serverId>copy</serverId>
+                        <id>copy</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
@@ -204,7 +204,7 @@
                     </execution>
                     <!-- 打包阶段，将 system 的jar包 copy 到 target/lib-->
                     <execution>
-                        <serverId>copy-lib</serverId>
+                        <id>copy-lib</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
