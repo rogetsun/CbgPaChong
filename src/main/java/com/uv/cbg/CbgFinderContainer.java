@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -48,8 +49,8 @@ public class CbgFinderContainer implements ApplicationContextAware {
         List<Future<CbgFindResult>> futures = new ArrayList<>();
 
         if (null != serverNames && !"".equals(serverNames)) {
-
             String[] serverNameArray = serverNames.split(",");
+            log.info("搜索[" + serverNameArray.length + "]个区:" + Arrays.toString(serverNameArray));
 
             for (String sn : serverNameArray) {
 
@@ -59,7 +60,7 @@ public class CbgFinderContainer implements ApplicationContextAware {
             }
 
         } else {
-
+            log.info("搜索全区！");
             Callable<CbgFindResult> callable = createCallableCbgFinder(null);
             futures.add(executorService.submit(callable));
 
@@ -105,7 +106,7 @@ public class CbgFinderContainer implements ApplicationContextAware {
             try {
                 //初步筛选条件下的搜索结果
                 List<CbgGamer> gamers = finder.searchCbg();
-
+                log.info("[" + sn + "]初步搜索到[" + (gamers == null ? 0 : gamers.size()) + "]个游戏号");
                 if (null != gamers && gamers.size() > 0) {
                     //性价比过滤
                     List<CbgGamer> cbgFilterGamers = costFilter.filter(gamers);

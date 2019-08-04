@@ -144,15 +144,22 @@ public class CbgFinderByRequest implements CbgFinder {
         List<CbgGamer> gamers = null;
 
         try {
+            log.info("begin to search [" + this.getServerName() + "],filter:" + this.getFilterBean());
             if (cbgDataUrl != null && !"".equals(cbgDataUrl)) {
 
                 JSONObject params = getUrlParams(this.filterBean);
+
                 StringBuilder requestUrl = new StringBuilder();
+
                 requestUrl.append(cbgDataUrl);
+
                 for (String key : params.keySet()) {
                     requestUrl.append("&").append(key).append("=").append(params.getString(key));
                 }
 
+                /**
+                 * 开始根据筛选条件搜索藏宝阁
+                 */
                 for (int page = 1; ; page++) {
                     JSONObject retMsg = this.fetchGameAccount(requestUrl.toString() + "&page=" + page);
                     if (retMsg != null) {
@@ -168,6 +175,9 @@ public class CbgFinderByRequest implements CbgFinder {
 
                             //本次返回的游戏账号信息
                             JSONArray gameAccounts = retMsg.getJSONArray("result");
+                            /**
+                             * 解析每一个游戏账号信息，生成CbgGamer,并放进返回List<CbgGamer>
+                             */
                             for (int i = 0; i < gameAccounts.size(); i++) {
                                 JSONObject acc = gameAccounts.getJSONObject(i);
                                 CbgGamer gamer = new CbgGamer();
@@ -202,6 +212,8 @@ public class CbgFinderByRequest implements CbgFinder {
                     }
 
                 }
+            } else {
+                log.info("未配置cbgDataUrl,无法搜索帐号.请查看config.properties");
             }
 
         } catch (Throwable e) {

@@ -17,13 +17,13 @@ public class Main {
     public static void main(String[] args) throws ApiException {
         try {
             systemVariables();
-            log.debug("begin to search my cbg!!!");
+            log.info("begin to search my cbg!!!");
             ApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring-config.xml");
             log.debug("applicationContext:" + applicationContext);
             CbgFinderContainer finder = applicationContext.getBean("cbgFinderContainer", CbgFinderContainer.class);
             log.debug("finder:" + finder);
             finder.startCbgFinderSearch();
-            log.debug("end to search !!!");
+            log.info("end to search !!!");
         } catch (BeansException | ApiException e) {
             log.error("运行失败,", e);
         }

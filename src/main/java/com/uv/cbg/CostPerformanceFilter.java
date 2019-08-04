@@ -36,7 +36,7 @@ public class CostPerformanceFilter {
             return null;
         }
 
-        log.debug("CPFilter:" + gamerList.size());
+        log.info("CPFilter:" + gamerList.size() + ", personScoreFilter:" + personCP + ", totalScoreFilter:" + totalCP);
 
         List<CbgGamer> ret = new ArrayList<>();
 
