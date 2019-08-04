@@ -47,8 +47,6 @@ public class CbgFinderByWeb implements CbgFinder {
         log.debug(webDriver.getCurrentUrl());
 
         try {
-            // 通过 id 找到 input 的 DOM
-            TimeUnit.SECONDS.sleep(5);
             try {
                 WebElement el = webDriver.findElement(By.linkText("iOS角色"));
                 el.click();
