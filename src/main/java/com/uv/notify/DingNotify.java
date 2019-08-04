@@ -65,7 +65,7 @@ public class DingNotify implements Notify {
                  * https://my.cbg.163.com/cgi/mweb/pl/role?platform_type=1&equip_level_min=69&equip_level_max=69&role_score=12587&total_score=20925&switch_in_serverid=29
                  */
 
-                String title = (gamer.isPublished() ? "[公]" : "") + "[" + gamer.getSchoolName() + "]" + ":￥" + gamer.getPrice().toString() + "元";
+                String title = (gamer.isPublished() ? "[公]" : "") + (gamer.isAllowBargain() ? "[还]" : "") + "[" + gamer.getSchoolName() + "]" + ":￥" + gamer.getPrice().toString() + "元";
                 String content = gamer.getServerName() + "\n"
                         + "[" + gamer.getTotalScore() + "/" + gamer.getPersonScore() + "]\n"
                         + gamer.getHighLights();
