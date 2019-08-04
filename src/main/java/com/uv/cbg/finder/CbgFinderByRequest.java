@@ -234,6 +234,7 @@ public class CbgFinderByRequest implements CbgFinder {
                         gamer.setIOS(acc.getInteger("platform_type") == 1);
                         gamer.setAllowBargain(acc.getBoolean("allow_bargain"));
                         gamer.setGameOrderSn(acc.getString("game_ordersn"));
+                        gamer.setPublished(acc.getInteger("pass_fair_show") == 0);
                         gamer.setUrl(this.gamerDetailWebUrl + gamer.getServerId() + "/" + gamer.getGameOrderSn());
                         //https://cbg-my.res.netease.com/game_res/res/photo/0007.png
                         gamer.setHeadIconLink(this.myResUrl + acc.getString("icon"));
