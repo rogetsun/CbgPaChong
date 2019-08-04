@@ -196,7 +196,7 @@ public class CbgFinderByRequest implements CbgFinder {
                     if (retMsg.getInteger("status") != 1) {
 
                         result.setCode(103);
-                        result.setMsg(retMsg.getString(retMsg.toString()));
+                        result.setMsg(retMsg.toString());
                         result.setGamerList(gamers);
                         result.setFoundCount(gamers.size());
                         return result;
