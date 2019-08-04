@@ -130,7 +130,7 @@ public class CbgFinderByWeb implements CbgFinder {
                     gamers.add(gamer);
 
                 }
-                log.info("found count:" + doneIdx);
+                log.debug("found count:" + doneIdx);
                 scrollBottom((JavascriptExecutor) driver, windowDimension, productDiv);
                 if (doneIdx == 0) {
                     WebElement notFound = productDiv.findElement(By.cssSelector(".empty-text"));

@@ -70,7 +70,7 @@ public class CbgFinderContainer implements ApplicationContextAware {
 
             try {
                 CbgFindResult result = future.get();
-                log.info("find result:[" + (result.getServerName() == null ? "全区" : result.getServerName()) + "] find over！found [" + result.getFoundCount() + "]个性价比高的游戏号");
+                log.info("[" + (result.getServerName() == null ? "全区" : result.getServerName()) + "]find over！found [" + result.getFoundCount() + "]个性价比高的游戏号");
                 if (result.getFoundCount() > 0) {
                     cbgGamers.addAll(result.getGamerList());
                     for (CbgGamer gamer : result.getGamerList()) {

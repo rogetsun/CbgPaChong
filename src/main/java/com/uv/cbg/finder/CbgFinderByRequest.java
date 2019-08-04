@@ -127,8 +127,6 @@ public class CbgFinderByRequest implements CbgFinder {
 
     private JSONObject asInfo;
 
-    private String serverName;
-
     @Value("#{config['my.config.area_server.info.json.file']}")
     private String asInfoFilePath;
 
@@ -144,7 +142,7 @@ public class CbgFinderByRequest implements CbgFinder {
         List<CbgGamer> gamers = null;
 
         try {
-            log.info("begin to search [" + this.getServerName() + "],filter:" + this.getFilterBean());
+            log.info("[" + this.getFilterBean().getServerName() + "]begin to search ,filter:" + this.getFilterBean());
             if (cbgDataUrl != null && !"".equals(cbgDataUrl)) {
 
                 JSONObject params = getUrlParams(this.filterBean);
@@ -213,7 +211,7 @@ public class CbgFinderByRequest implements CbgFinder {
 
                 }
             } else {
-                log.info("未配置cbgDataUrl,无法搜索帐号.请查看config.properties");
+                log.info("[" + this.getFilterBean().getServerName() + "]搜索结束,未配置cbgDataUrl,无法搜索帐号.请查看config.properties");
             }
 
         } catch (Throwable e) {
@@ -299,14 +297,6 @@ public class CbgFinderByRequest implements CbgFinder {
     @Override
     public void setCbgURL(String cbgDataUrl) {
         this.cbgDataUrl = cbgDataUrl;
-    }
-
-    public String getServerName() {
-        return serverName;
-    }
-
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
     }
 
     public String getAsInfoFilePath() {
