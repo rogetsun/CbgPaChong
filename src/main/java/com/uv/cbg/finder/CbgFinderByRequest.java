@@ -142,7 +142,7 @@ public class CbgFinderByRequest implements CbgFinder {
         List<CbgGamer> gamers = null;
 
         try {
-            log.info("[" + this.getFilterBean().getServerName() + "]begin to search ,filter:" + this.getFilterBean());
+            log.debug("[" + this.getFilterBean().getServerName() + "]begin to search ,filter:" + this.getFilterBean());
             if (cbgDataUrl != null && !"".equals(cbgDataUrl)) {
 
                 JSONObject params = getUrlParams(this.filterBean);

@@ -106,7 +106,7 @@ public class CbgFinderContainer implements ApplicationContextAware {
             try {
                 //初步筛选条件下的搜索结果
                 List<CbgGamer> gamers = finder.searchCbg();
-                log.info("[" + sn + "]初步搜索到[" + (gamers == null ? 0 : gamers.size()) + "]个游戏号");
+                log.debug("[" + sn + "]初步搜索到[" + (gamers == null ? 0 : gamers.size()) + "]个游戏号");
                 if (null != gamers && gamers.size() > 0) {
                     //性价比过滤
                     List<CbgGamer> cbgFilterGamers = costFilter.filter(gamers);

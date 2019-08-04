@@ -92,7 +92,7 @@ public class CbgFinderByWeb implements CbgFinder {
             for (CbgGamer gamer : gamers) {
                 log.debug(gamer);
             }
-            log.info("[" + (this.filterBean.getServerName() == null ? "全区" : this.filterBean.getServerName()) + "]找到 " + gamers.size() + " 个初步满足要求的游戏号,用时:" + ((System.currentTimeMillis() - startTime) / 1000) + "s");
+            log.debug("[" + (this.filterBean.getServerName() == null ? "全区" : this.filterBean.getServerName()) + "]找到 " + gamers.size() + " 个初步满足要求的游戏号,用时:" + ((System.currentTimeMillis() - startTime) / 1000) + "s");
             if (!isChromeHeadless) {
                 TimeUnit.SECONDS.sleep(60);
             }
