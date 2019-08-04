@@ -82,6 +82,7 @@
     <bean id="requestFinder" class="com.uv.cbg.finder.CbgFinderByRequest" scope="prototype" init-method="loadAreaServerConfig">
         <property name="cbgURL" value="${my.cbg.data.URL}"/>
         <property name="filterBean" ref="filter"/>
+        <property name="dingNotify" ref="dingNotify"/>
     </bean>
 
     <!--
@@ -100,7 +101,7 @@
         <property name="costFilter" ref="costPerformanceFilter"/>
         <property name="notify" ref="dingNotify"/>
         <property name="threadCount" value="${thread.count}"/>
-        <property name="finderBeanName" value="requestFinder"/>
+        <property name="finderBeanName" value="cbgFinderByWeb"/>
     </bean>
 
 

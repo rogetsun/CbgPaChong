@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,34 +55,23 @@ public class DingNotify implements Notify {
         }
         if (gamers != null && gamers.size() > 0) {
             for (CbgGamer gamer : gamers) {
-                DingTalkClient client = new DefaultDingTalkClient(this.URL);
                 if (noticeJson.containsKey(gamer.getTotalScore() + "-" + gamer.getPrice().toString())) {
                     continue;
                 } else {
                     noticeJson.put(gamer.getTotalScore() + "-" + gamer.getPrice().toString(), "[" + gamer.getServerName() + "]" + gamer.getSchoolName());
                 }
-
-                OapiRobotSendRequest request = new OapiRobotSendRequest();
-
                 /**
                  * eg代码：
                  * https://my.cbg.163.com/cgi/mweb/pl/role?platform_type=1&equip_level_min=69&equip_level_max=69&role_score=12587&total_score=20925&switch_in_serverid=29
                  */
-                request.setMsgtype("link");
-                OapiRobotSendRequest.Link link = new OapiRobotSendRequest.Link();
-                link.setMessageUrl(gamer.getUrl());
-                link.setPicUrl(gamer.getHeadIconLink());
-                link.setTitle("[" + gamer.getSchoolName() + "]" + ":￥" + gamer.getPrice().toString() + "元");
-                link.setText(
-                        gamer.getServerName() + "\n"
-                                + "[" + gamer.getTotalScore() + "/" + gamer.getPersonScore() + "]\n"
-                                + gamer.getHighLights()
-                );
-                request.setLink(link);
 
-                OapiRobotSendResponse response = client.execute(request);
-
-                log.debug(response);
+                String title = "[" + gamer.getSchoolName() + "]" + ":￥" + gamer.getPrice().toString() + "元";
+                String content = gamer.getServerName() + "\n"
+                        + "[" + gamer.getTotalScore() + "/" + gamer.getPersonScore() + "]\n"
+                        + gamer.getHighLights();
+                String msgUrl = gamer.getUrl();
+                String picUrl = gamer.getHeadIconLink();
+                this.sendLinkMsg(title, content, msgUrl, picUrl);
             }
 
 
@@ -99,6 +89,62 @@ public class DingNotify implements Notify {
         } catch (IOException e) {
             log.error("", e);
         }
+    }
+
+    /**
+     * 发送藏宝阁 帐号信息 link的钉钉通知
+     *
+     * @param title
+     * @param content
+     * @param msgUrl
+     * @param picUrl
+     * @return
+     * @throws ApiException
+     */
+    public OapiRobotSendResponse sendLinkMsg(String title, String content, String msgUrl, String picUrl) throws ApiException {
+        DingTalkClient client = new DefaultDingTalkClient(this.URL);
+        OapiRobotSendRequest request = new OapiRobotSendRequest();
+
+        request.setMsgtype("link");
+        OapiRobotSendRequest.Link link = new OapiRobotSendRequest.Link();
+        link.setMessageUrl(msgUrl);
+        link.setPicUrl(picUrl);
+        link.setTitle(title);
+        link.setText(content);
+        request.setLink(link);
+
+        OapiRobotSendResponse response = client.execute(request);
+
+        log.debug(response);
+        return response;
+    }
+
+    public OapiRobotSendResponse sendTextMsg(String content) throws ApiException {
+        DingTalkClient client = new DefaultDingTalkClient(this.URL);
+        OapiRobotSendRequest request = new OapiRobotSendRequest();
+        request.setMsgtype("text");
+        OapiRobotSendRequest.Text text = new OapiRobotSendRequest.Text();
+        text.setContent(content);
+        request.setText(text);
+        OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
+        at.setAtMobiles(Arrays.asList("13835176799"));
+        request.setAt(at);
+        OapiRobotSendResponse response = client.execute(request);
+        log.debug(response);
+        return response;
+    }
+
+    public OapiRobotSendResponse sendMarkDownMsg(String title, String content) throws ApiException {
+        DingTalkClient client = new DefaultDingTalkClient(this.URL);
+        OapiRobotSendRequest request = new OapiRobotSendRequest();
+        request.setMsgtype("markdown");
+        OapiRobotSendRequest.Markdown markdown = new OapiRobotSendRequest.Markdown();
+        markdown.setTitle(title);
+        markdown.setText(content);
+        request.setMarkdown(markdown);
+        OapiRobotSendResponse response = client.execute(request);
+        log.debug(response);
+        return response;
     }
 
 }

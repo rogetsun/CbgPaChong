@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.uv.cbg.CbgGamer;
 import com.uv.cbg.FilterBean;
+import com.uv.notify.DingNotify;
 import com.uv.notify.HttpUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -139,6 +140,8 @@ public class CbgFinderByRequest implements CbgFinder {
     @Value("#{config['my.cbg.res.web.URL']}")
     private String myResUrl;
 
+    private DingNotify dingNotify;
+
     @Override
     public List<CbgGamer> searchCbg() {
         List<CbgGamer> gamers = null;
@@ -162,7 +165,8 @@ public class CbgFinderByRequest implements CbgFinder {
                  */
                 for (int page = 1; ; page++) {
                     JSONObject retMsg = this.fetchGameAccount(requestUrl.toString() + "&page=" + page);
-                    if (retMsg != null) {
+                    log.debug("request ret:" + retMsg);
+                    if (retMsg != null && retMsg.getInteger("status") == 1) {
                         //搜索到的符合少选条件的 游戏号 总数
                         int totalNum = retMsg.getInteger("total_num");
                         boolean isLastPage = retMsg.containsKey("paging") && retMsg.getJSONObject("paging").getBoolean("is_last_page");
@@ -210,6 +214,10 @@ public class CbgFinderByRequest implements CbgFinder {
                             break;
                         }
                     } else {
+                        log.info("[" + this.getFilterBean().getServerName() + "]cbg返回信息:" + retMsg);
+                        String title = "[" + this.getFilterBean().getServerName() + "]无法搜索";
+                        String content = "title:" + title + ":" + (retMsg == null ? "无返回信息" : retMsg.toString());
+                        dingNotify.sendTextMsg(content);
                         break;
                     }
 
@@ -309,6 +317,14 @@ public class CbgFinderByRequest implements CbgFinder {
 
     public void setAsInfoFilePath(String asInfoFilePath) {
         this.asInfoFilePath = asInfoFilePath;
+    }
+
+    public DingNotify getDingNotify() {
+        return dingNotify;
+    }
+
+    public void setDingNotify(DingNotify dingNotify) {
+        this.dingNotify = dingNotify;
     }
 
     public static void main(String[] args) throws IOException {

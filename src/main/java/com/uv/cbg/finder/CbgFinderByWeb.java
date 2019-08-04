@@ -6,6 +6,7 @@ import com.uv.driver.MyDriver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class CbgFinderByWeb implements CbgFinder {
         webDriver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         //设置页面隐性等待元素查找时间10s，也是等待页面加载导致
         webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-
+        log.debug("size:" + webDriver.manage().window().getSize());
 
         // 让浏览器访问
         webDriver.get(this.cbgURL);
@@ -47,12 +48,18 @@ public class CbgFinderByWeb implements CbgFinder {
 
         try {
             // 通过 id 找到 input 的 DOM
-            WebElement el = webDriver.findElement(By.linkText("iOS角色"));
-            el.click();
-
-//            this.setFilterOptions(webDriver);
+            TimeUnit.SECONDS.sleep(5);
+            try {
+                WebElement el = webDriver.findElement(By.linkText("iOS角色"));
+                el.click();
+            } catch (ElementClickInterceptedException e) {
+                log.error(webDriver.getPageSource());
+                log.error("有覆盖层,需要校验拖动滑块,先点掉!!!", e);
+                this.slide(webDriver);
+                WebElement el = webDriver.findElement(By.linkText("iOS角色"));
+                el.click();
+            }
             this.setAllFilterOptions(webDriver);
-
             gamers = this.startSearch(webDriver);
 
         } catch (Throwable e) {
@@ -64,6 +71,14 @@ public class CbgFinderByWeb implements CbgFinder {
 
     }
 
+    private void slide(WebDriver webDriver) {
+        WebElement sliderController = webDriver.findElement(By.className("yidun_control"));
+        WebElement slider = sliderController.findElement(By.className("yidun_slider"));
+        int ctrlWidth = sliderController.getSize().getWidth();
+        int sliderWidth = slider.getSize().getWidth();
+        Actions action = new Actions(webDriver);
+        action.dragAndDropBy(slider, ctrlWidth - sliderWidth, 0).perform();
+    }
 
     private List<CbgGamer> startSearch(WebDriver webDriver) throws InterruptedException {
         long startTime = System.currentTimeMillis();
