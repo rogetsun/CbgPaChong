@@ -136,6 +136,8 @@ public class CbgFinderByRequest implements CbgFinder {
     @Value("#{config['my.cbg.detail.data.URL']}")
     private String gamerDetailDataUrl;
 
+    @Value("#{config['my.cbg.res.web.URL']}")
+    private String myResUrl;
 
     @Override
     public List<CbgGamer> searchCbg() {
@@ -196,6 +198,8 @@ public class CbgFinderByRequest implements CbgFinder {
                                 gamer.setAllowBargain(acc.getBoolean("allow_bargain"));
                                 gamer.setGameOrderSn(acc.getString("game_ordersn"));
                                 gamer.setUrl(this.gamerDetailWebUrl + gamer.getServerId() + "/" + gamer.getGameOrderSn());
+                                //https://cbg-my.res.netease.com/game_res/res/photo/0007.png
+                                gamer.setHeadIconLink(this.myResUrl + acc.getString("icon"));
                                 gamers.add(gamer);
                                 log.debug("gamer:" + gamer);
                             }

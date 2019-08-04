@@ -70,7 +70,7 @@ public class DingNotify implements Notify {
                 request.setMsgtype("link");
                 OapiRobotSendRequest.Link link = new OapiRobotSendRequest.Link();
                 link.setMessageUrl(gamer.getUrl());
-                link.setPicUrl("");
+                link.setPicUrl(gamer.getHeadIconLink());
                 link.setTitle("[" + gamer.getSchoolName() + "]" + ":" + gamer.getPrice().toString());
 
                 link.setText(

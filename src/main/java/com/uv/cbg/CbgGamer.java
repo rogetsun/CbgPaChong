@@ -78,6 +78,11 @@ public class CbgGamer {
     private String gameOrderSn;
 
     /**
+     * 游戏号头像 icon 的 url
+     */
+    private String headIconLink;
+
+    /**
      * <div class="info">
      * <div class="row">
      * <span class="product-item-tag">
@@ -276,6 +281,14 @@ public class CbgGamer {
 
     public void setDetailDataUrl(String detailDataUrl) {
         this.detailDataUrl = detailDataUrl;
+    }
+
+    public String getHeadIconLink() {
+        return headIconLink;
+    }
+
+    public void setHeadIconLink(String headIconLink) {
+        this.headIconLink = headIconLink;
     }
 
     @Override
