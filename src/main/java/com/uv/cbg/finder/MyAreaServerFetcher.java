@@ -3,7 +3,7 @@ package com.uv.cbg.finder;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.uv.cbg.CbgGamer;
+import com.uv.cbg.CbgFindResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
@@ -29,8 +29,9 @@ public class MyAreaServerFetcher extends CbgFinderByWeb {
     private int serverHtmlIdx;
 
     @Override
-    public List<CbgGamer> searchCbg() throws IOException {
-        List<CbgGamer> gamers = null;
+    public CbgFindResult searchCbg() throws IOException {
+        CbgFindResult result = new CbgFindResult();
+        result.setFoundCount(0);
 
         WebDriver webDriver = this.getMyDriver().getWebDriver();
         //设置页面隐性等待加载时间10s
@@ -82,10 +83,12 @@ public class MyAreaServerFetcher extends CbgFinderByWeb {
             log.info(areaServers.toString(SerializerFeature.PrettyFormat));
         } catch (Throwable e) {
             log.error("发生异常", e);
+            result.setCode(901);
+            result.setMsg(e.getMessage());
         } finally {
             this.getMyDriver().stop();
         }
-        return gamers;
+        return result;
 
     }
 

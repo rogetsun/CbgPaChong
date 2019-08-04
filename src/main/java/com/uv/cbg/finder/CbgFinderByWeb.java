@@ -1,5 +1,6 @@
 package com.uv.cbg.finder;
 
+import com.uv.cbg.CbgFindResult;
 import com.uv.cbg.CbgGamer;
 import com.uv.cbg.FilterBean;
 import com.uv.driver.MyDriver;
@@ -30,8 +31,12 @@ public class CbgFinderByWeb implements CbgFinder {
     private FilterBean filterBean;
 
     @Override
-    public List<CbgGamer> searchCbg() throws IOException {
-        List<CbgGamer> gamers = null;
+    public CbgFindResult searchCbg() throws IOException {
+        CbgFindResult result = new CbgFindResult();
+        result.setServerName(this.getFilterBean().getServerName());
+
+        List<CbgGamer> gamers = new ArrayList<>();
+        result.setGamerList(gamers);
 
         WebDriver webDriver = this.getMyDriver().getWebDriver();
         //设置页面隐性等待加载时间10s
@@ -47,28 +52,34 @@ public class CbgFinderByWeb implements CbgFinder {
         log.debug(webDriver.getCurrentUrl());
 
         try {
-            try {
-                WebElement el = webDriver.findElement(By.linkText("iOS角色"));
-                el.click();
-            } catch (ElementClickInterceptedException e) {
-                log.error(webDriver.getPageSource());
-                log.error("有覆盖层,需要校验拖动滑块,先点掉!!!", e);
-                this.slide(webDriver);
-                WebElement el = webDriver.findElement(By.linkText("iOS角色"));
-                el.click();
-            }
+            WebElement el = webDriver.findElement(By.linkText("iOS角色"));
+            el.click();
+
             this.setAllFilterOptions(webDriver);
-            gamers = this.startSearch(webDriver);
+            gamers.addAll(this.startSearch(webDriver));
 
         } catch (Throwable e) {
             log.error("发生异常", e);
+            result.setCode(201);
+            result.setMsg(e.getMessage());
+            return result;
         } finally {
             this.getMyDriver().stop();
+
         }
-        return gamers;
+
+        result.setCode(0);
+        result.setFoundCount(gamers.size());
+
+        return result;
 
     }
 
+    /**
+     * 移动滑块
+     *
+     * @param webDriver
+     */
     private void slide(WebDriver webDriver) {
         WebElement sliderController = webDriver.findElement(By.className("yidun_control"));
         WebElement slider = sliderController.findElement(By.className("yidun_slider"));

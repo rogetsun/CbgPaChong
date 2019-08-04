@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.uv.cbg.CbgFindResult;
 import com.uv.cbg.CbgGamer;
 import com.uv.cbg.FilterBean;
 import com.uv.notify.DingNotify;
@@ -143,93 +144,120 @@ public class CbgFinderByRequest implements CbgFinder {
     private DingNotify dingNotify;
 
     @Override
-    public List<CbgGamer> searchCbg() {
-        List<CbgGamer> gamers = null;
+    public CbgFindResult searchCbg() {
+
+        CbgFindResult result = new CbgFindResult();
+        result.setServerName(this.getFilterBean().getServerName() == null ? "全区" : this.getFilterBean().getServerName());
 
         try {
+
             log.debug("[" + this.getFilterBean().getServerName() + "]begin to search ,filter:" + this.getFilterBean());
-            if (cbgDataUrl != null && !"".equals(cbgDataUrl)) {
 
-                JSONObject params = getUrlParams(this.filterBean);
+            if (cbgDataUrl == null || "".equals(cbgDataUrl)) {
+                result.setMsg("无请求地址");
+                result.setCode(101);
+                log.info("[" + this.getFilterBean().getServerName() + "]搜索结束,未配置cbgDataUrl,无法搜索帐号.请查看config.properties");
+                return result;
+            }
 
-                StringBuilder requestUrl = new StringBuilder();
+            /**
+             * 拼接请求URL
+             */
+            JSONObject params = getUrlParams(this.filterBean);
+            StringBuilder requestUrl = new StringBuilder();
+            requestUrl.append(cbgDataUrl);
+            for (String key : params.keySet()) {
+                requestUrl.append("&").append(key).append("=").append(params.getString(key));
+            }
 
-                requestUrl.append(cbgDataUrl);
+            /**
+             * 开始根据筛选条件搜索藏宝阁
+             */
+            List<CbgGamer> gamers = new ArrayList<>();
+            for (int page = 1; ; page++) {
 
-                for (String key : params.keySet()) {
-                    requestUrl.append("&").append(key).append("=").append(params.getString(key));
-                }
+                JSONObject retMsg = this.fetchGameAccount(requestUrl.toString() + "&page=" + page);
+                log.debug("request ret:" + retMsg);
 
                 /**
-                 * 开始根据筛选条件搜索藏宝阁
+                 * 非正常情况判断
                  */
-                for (int page = 1; ; page++) {
-                    JSONObject retMsg = this.fetchGameAccount(requestUrl.toString() + "&page=" + page);
-                    log.debug("request ret:" + retMsg);
-                    if (retMsg != null && retMsg.getInteger("status") == 1) {
-                        //搜索到的符合少选条件的 游戏号 总数
-                        int totalNum = retMsg.getInteger("total_num");
-                        boolean isLastPage = retMsg.containsKey("paging") && retMsg.getJSONObject("paging").getBoolean("is_last_page");
-                        log.debug("第" + page + "次搜索到" + totalNum + "个号。最后一页：" + isLastPage);
+                {
+                    if (retMsg == null) {
 
-                        if (totalNum > 0) {
-                            if (page == 1) {
-                                gamers = new ArrayList<>();
-                            }
+                        result.setCode(102);
+                        result.setMsg("无法请求藏宝阁!url=" + requestUrl.toString());
+                        result.setGamerList(gamers);
+                        result.setFoundCount(gamers.size());
+                        return result;
 
-                            //本次返回的游戏账号信息
-                            JSONArray gameAccounts = retMsg.getJSONArray("result");
-                            /**
-                             * 解析每一个游戏账号信息，生成CbgGamer,并放进返回List<CbgGamer>
-                             */
-                            for (int i = 0; i < gameAccounts.size(); i++) {
-                                JSONObject acc = gameAccounts.getJSONObject(i);
-                                CbgGamer gamer = new CbgGamer();
-                                gamer.setCollectCount(acc.getInteger("collect_num"));
-                                String price = acc.getString("price");
-                                price = price.substring(0, price.length() - 2) + "." + price.substring(price.length() - 2);
-                                gamer.setPrice(new BigDecimal(price));
-                                gamer.setLevel(acc.getInteger("equip_level"));
-                                gamer.setSchoolName(acc.getString("format_equip_name"));
-                                gamer.setServerName(acc.getString("area_name") + "-" + acc.getString("server_name"));
-                                gamer.setServerId(acc.getInteger("serverid"));
-                                JSONObject otherInfo = acc.getJSONObject("other_info");
-                                gamer.setHighLights(otherInfo.getJSONArray("highlights").toString());
-                                JSONArray scores = otherInfo.getJSONArray("basic_attrs");
-                                gamer.setTotalScore(Integer.valueOf(scores.get(0).toString().split(":")[1]));
-                                gamer.setPersonScore(Integer.valueOf(scores.get(1).toString().split(":")[1]));
-                                gamer.setIOS(acc.getInteger("platform_type") == 1);
-                                gamer.setAllowBargain(acc.getBoolean("allow_bargain"));
-                                gamer.setGameOrderSn(acc.getString("game_ordersn"));
-                                gamer.setUrl(this.gamerDetailWebUrl + gamer.getServerId() + "/" + gamer.getGameOrderSn());
-                                //https://cbg-my.res.netease.com/game_res/res/photo/0007.png
-                                gamer.setHeadIconLink(this.myResUrl + acc.getString("icon"));
-                                gamers.add(gamer);
-                                log.debug("gamer:" + gamer);
-                            }
+                    }
 
-                        }
-                        //判断是否最后一页
-                        if (isLastPage) {
-                            break;
-                        }
-                    } else {
-                        log.info("[" + this.getFilterBean().getServerName() + "]cbg返回信息:" + retMsg);
-                        String title = "[" + this.getFilterBean().getServerName() + "]无法搜索";
-                        String content = "title:" + title + ":" + (retMsg == null ? "无返回信息" : retMsg.toString());
-                        dingNotify.sendTextMsg(content);
-                        break;
+                    if (retMsg.getInteger("status") != 1) {
+
+                        result.setCode(103);
+                        result.setMsg(retMsg.getString(retMsg.toString()));
+                        result.setGamerList(gamers);
+                        result.setFoundCount(gamers.size());
+                        return result;
+
+                    }
+                }
+                //搜索到的符合筛选条件的 游戏号 总数
+                int totalNum = retMsg.getInteger("total_num");
+                boolean isLastPage = retMsg.containsKey("paging") && retMsg.getJSONObject("paging").getBoolean("is_last_page");
+                log.debug("第" + page + "次搜索到" + totalNum + "个号。最后一页：" + isLastPage);
+
+                if (totalNum > 0) {
+
+                    //本次返回的游戏账号信息
+                    JSONArray gameAccounts = retMsg.getJSONArray("result");
+                    /**
+                     * 解析每一个游戏账号信息，生成CbgGamer,并放进返回List<CbgGamer>
+                     */
+                    for (int i = 0; i < gameAccounts.size(); i++) {
+                        JSONObject acc = gameAccounts.getJSONObject(i);
+                        CbgGamer gamer = new CbgGamer();
+                        gamer.setCollectCount(acc.getInteger("collect_num"));
+                        String price = acc.getString("price");
+                        price = price.substring(0, price.length() - 2) + "." + price.substring(price.length() - 2);
+                        gamer.setPrice(new BigDecimal(price));
+                        gamer.setLevel(acc.getInteger("equip_level"));
+                        gamer.setSchoolName(acc.getString("format_equip_name"));
+                        gamer.setServerName(acc.getString("area_name") + "-" + acc.getString("server_name"));
+                        gamer.setServerId(acc.getInteger("serverid"));
+                        JSONObject otherInfo = acc.getJSONObject("other_info");
+                        gamer.setHighLights(otherInfo.getJSONArray("highlights").toString());
+                        JSONArray scores = otherInfo.getJSONArray("basic_attrs");
+                        gamer.setTotalScore(Integer.valueOf(scores.get(0).toString().split(":")[1]));
+                        gamer.setPersonScore(Integer.valueOf(scores.get(1).toString().split(":")[1]));
+                        gamer.setIOS(acc.getInteger("platform_type") == 1);
+                        gamer.setAllowBargain(acc.getBoolean("allow_bargain"));
+                        gamer.setGameOrderSn(acc.getString("game_ordersn"));
+                        gamer.setUrl(this.gamerDetailWebUrl + gamer.getServerId() + "/" + gamer.getGameOrderSn());
+                        //https://cbg-my.res.netease.com/game_res/res/photo/0007.png
+                        gamer.setHeadIconLink(this.myResUrl + acc.getString("icon"));
+                        gamers.add(gamer);
+                        log.debug("gamer:" + gamer);
                     }
 
                 }
-            } else {
-                log.info("[" + this.getFilterBean().getServerName() + "]搜索结束,未配置cbgDataUrl,无法搜索帐号.请查看config.properties");
+                //判断是否最后一页
+                if (isLastPage) {
+                    break;
+                }
+
             }
+
+            result.setCode(0);
+            result.setMsg("success");
+            result.setGamerList(gamers);
+            result.setFoundCount(gamers.size());
 
         } catch (Throwable e) {
             log.error("发生异常", e);
         }
-        return gamers;
+        return result;
 
     }
 

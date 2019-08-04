@@ -65,12 +65,22 @@ public class CbgFinderContainer implements ApplicationContextAware {
             futures.add(executorService.submit(callable));
 
         }
+
         List<CbgGamer> cbgGamers = new ArrayList<>();
+        List<Integer> errorCodeList = new ArrayList<>();
+
         for (Future<CbgFindResult> future : futures) {
 
             try {
                 CbgFindResult result = future.get();
                 log.info("[" + (result.getServerName() == null ? "全区" : result.getServerName()) + "]find over！found [" + result.getFoundCount() + "]个性价比高的游戏号");
+                if (result.getCode() != 0) {
+                    if (!errorCodeList.contains(result.getCode())) {
+                        notify.sendTextMsg(result.toString());
+                        errorCodeList.add(result.getCode());
+                        continue;
+                    }
+                }
                 if (result.getFoundCount() > 0) {
                     cbgGamers.addAll(result.getGamerList());
                     for (CbgGamer gamer : result.getGamerList()) {
@@ -105,20 +115,28 @@ public class CbgFinderContainer implements ApplicationContextAware {
             CbgFindResult findResult = new CbgFindResult(null, sn, 0);
             try {
                 //初步筛选条件下的搜索结果
-                List<CbgGamer> gamers = finder.searchCbg();
-                log.debug("[" + sn + "]初步搜索到[" + (gamers == null ? 0 : gamers.size()) + "]个游戏号");
-                if (null != gamers && gamers.size() > 0) {
+                CbgFindResult searchResult = finder.searchCbg();
+                log.debug("[" + sn + "]初步搜索结果:[code:" + searchResult.getCode() + ",][count:" + searchResult.getFoundCount() + "].msg:" + searchResult.getMsg());
+                if (searchResult.getCode() != 0) {
+                    return searchResult;
+                }
+                if (searchResult.getFoundCount() > 0) {
                     //性价比过滤
-                    List<CbgGamer> cbgFilterGamers = costFilter.filter(gamers);
+                    List<CbgGamer> cbgFilterGamers = costFilter.filter(searchResult.getGamerList());
 
                     //如果过滤完 依然有找到的游戏号，则放入搜索结果
                     if (cbgFilterGamers != null && cbgFilterGamers.size() > 0) {
                         findResult.setGamerList(cbgFilterGamers);
                         findResult.setFoundCount(cbgFilterGamers.size());
+                        findResult.setCode(0);
+                        findResult.setMsg("success");
                     }
                 }
 
             } catch (Throwable e) {
+                findResult.setCode(10001);
+                findResult.setMsg(e.getMessage());
+                findResult.setFoundCount(0);
                 log.error("查找[" + (sn == null ? "全区" : sn) + "]的号失败!", e);
             }
             return findResult;

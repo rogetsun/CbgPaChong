@@ -101,6 +101,7 @@ public class DingNotify implements Notify {
      * @return
      * @throws ApiException
      */
+    @Override
     public OapiRobotSendResponse sendLinkMsg(String title, String content, String msgUrl, String picUrl) throws ApiException {
         DingTalkClient client = new DefaultDingTalkClient(this.URL);
         OapiRobotSendRequest request = new OapiRobotSendRequest();
@@ -119,6 +120,7 @@ public class DingNotify implements Notify {
         return response;
     }
 
+    @Override
     public OapiRobotSendResponse sendTextMsg(String content) throws ApiException {
         DingTalkClient client = new DefaultDingTalkClient(this.URL);
         OapiRobotSendRequest request = new OapiRobotSendRequest();
@@ -134,6 +136,7 @@ public class DingNotify implements Notify {
         return response;
     }
 
+    @Override
     public OapiRobotSendResponse sendMarkDownMsg(String title, String content) throws ApiException {
         DingTalkClient client = new DefaultDingTalkClient(this.URL);
         OapiRobotSendRequest request = new OapiRobotSendRequest();

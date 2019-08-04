@@ -1,17 +1,16 @@
 package com.uv.cbg.finder;
 
-import com.uv.cbg.CbgGamer;
+import com.uv.cbg.CbgFindResult;
 import com.uv.cbg.FilterBean;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author uvsun 2019-08-01 16:54
  */
 public interface CbgFinder {
 
-    List<CbgGamer> searchCbg() throws IOException;
+    CbgFindResult searchCbg() throws IOException;
 
     FilterBean getFilterBean();
 
