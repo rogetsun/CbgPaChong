@@ -10,7 +10,7 @@ import java.util.List;
  * @author uvsun 2019-08-02 14:32
  */
 public interface Notify {
-    void notify(List<CbgGamer> gamers) throws ApiException;
+    int notify(List<CbgGamer> gamers) throws ApiException;
 
     /**
      * 发送带link的通知

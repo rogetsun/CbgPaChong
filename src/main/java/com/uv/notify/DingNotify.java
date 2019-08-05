@@ -36,7 +36,7 @@ public class DingNotify implements Notify {
     private JSONObject noticeJson;
 
     @Override
-    public void notify(List<CbgGamer> gamers) throws ApiException {
+    public int notify(List<CbgGamer> gamers) throws ApiException {
 
         File noticeFile = new File(this.filePath);
         if (noticeFile.exists()) {
@@ -53,13 +53,14 @@ public class DingNotify implements Notify {
         if (noticeJson == null) {
             noticeJson = new JSONObject();
         }
+        int noticedNum = 0;
         if (gamers != null && gamers.size() > 0) {
             for (CbgGamer gamer : gamers) {
                 if (noticeJson.containsKey(gamer.getTotalScore() + "-" + gamer.getPrice().toString())) {
                     continue;
-                } else {
-                    noticeJson.put(gamer.getTotalScore() + "-" + gamer.getPrice().toString(), "[" + gamer.getServerName() + "]" + gamer.getSchoolName());
                 }
+                noticeJson.put(gamer.getTotalScore() + "-" + gamer.getPrice().toString(), "[" + gamer.getServerName() + "]" + gamer.getSchoolName());
+                noticedNum++;
                 /**
                  * eg代码：
                  * https://my.cbg.163.com/cgi/mweb/pl/role?platform_type=1&equip_level_min=69&equip_level_max=69&role_score=12587&total_score=20925&switch_in_serverid=29
@@ -73,7 +74,6 @@ public class DingNotify implements Notify {
                 String picUrl = gamer.getHeadIconLink();
                 this.sendLinkMsg(title, content, msgUrl, picUrl);
             }
-
 
         }
 
@@ -89,6 +89,7 @@ public class DingNotify implements Notify {
         } catch (IOException e) {
             log.error("", e);
         }
+        return noticedNum;
     }
 
     /**

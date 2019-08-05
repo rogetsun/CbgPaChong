@@ -82,7 +82,7 @@ public class CbgFinderContainer implements ApplicationContextAware {
                         continue;
                     }
                 }
-                log.info("[" + (result.getServerName() == null ? "全区" : result.getServerName()) + "]find over！found [" + result.getFoundCount() + "]个性价比高的游戏号");
+                log.info("[" + (result.getServerName() == null ? "全区" : result.getServerName()) + "]find over;" + result.toString());
                 if (result.getFoundCount() > 0) {
                     cbgGamers.addAll(result.getGamerList());
                     for (CbgGamer gamer : result.getGamerList()) {
@@ -94,10 +94,11 @@ public class CbgFinderContainer implements ApplicationContextAware {
             }
         }
         executorService.shutdown();
-
+        int noticedNum = 0;
         if (cbgGamers.size() > 0) {
-            notify.notify(cbgGamers);
+            noticedNum = notify.notify(cbgGamers);
         }
+        log.info("total: found [" + cbgGamers.size() + "], noticed[" + noticedNum + "]");
 
         return futures.size();
     }
