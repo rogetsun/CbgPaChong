@@ -164,12 +164,13 @@ public class CbgFinderByRequest implements CbgFinder {
              * 拼接请求URL
              */
             JSONObject params = getUrlParams(this.filterBean);
+            log.debug("Search Param:" + params);
             StringBuilder requestUrl = new StringBuilder();
             requestUrl.append(cbgDataUrl);
             for (String key : params.keySet()) {
                 requestUrl.append("&").append(key).append("=").append(params.getString(key));
             }
-
+            log.debug("Search URL:" + requestUrl.toString());
             /**
              * 开始根据筛选条件搜索藏宝阁
              */
@@ -278,7 +279,7 @@ public class CbgFinderByRequest implements CbgFinder {
         if (filterBean.getTotalScore() != 0) {
             params.put("total_score", filterBean.getTotalScore());
         }
-        if (filterBean.getSchools() != null && "".equals(filterBean.getSchools())) {
+        if (filterBean.getSchools() != null && !"".equals(filterBean.getSchools())) {
             params.put("school", filterBean.getSchools());
         }
         if (filterBean.getLevel() != 0) {
