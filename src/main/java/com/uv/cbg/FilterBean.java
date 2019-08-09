@@ -67,6 +67,9 @@ public class FilterBean {
     private int showPublishHtmlIdx;
     private boolean isShowPublish;
 
+    @Value("#{config['search.platform.value']}")
+    private int platformType;
+
 
     public int getServerHtmlIdx() {
         return serverHtmlIdx;
@@ -148,6 +151,14 @@ public class FilterBean {
         isShowPublish = showPublish;
     }
 
+    public int getPlatformType() {
+        return platformType;
+    }
+
+    public void setPlatformType(int platformType) {
+        this.platformType = platformType;
+    }
+
     @Override
     public String toString() {
         return "FilterBean{" +
@@ -157,6 +168,7 @@ public class FilterBean {
                 ", personScore=" + personScore +
                 ", schools='" + schools + '\'' +
                 ", isShowPublish=" + isShowPublish +
+                ", platformType=" + platformType +
                 '}';
     }
 }

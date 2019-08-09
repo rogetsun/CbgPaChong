@@ -273,6 +273,9 @@ public class CbgFinderByRequest implements CbgFinder {
 
     private JSONObject getUrlParams(FilterBean filterBean) {
         JSONObject params = new JSONObject();
+        if (filterBean.getPlatformType() != 0) {
+            params.put("platform_type", filterBean.getPlatformType());
+        }
         if (filterBean.getPersonScore() != 0) {
             params.put("role_score", filterBean.getPersonScore());
         }
@@ -282,6 +285,7 @@ public class CbgFinderByRequest implements CbgFinder {
         if (filterBean.getSchools() != null && !"".equals(filterBean.getSchools())) {
             params.put("school", filterBean.getSchools());
         }
+
         if (filterBean.getLevel() != 0) {
             switch (filterBean.getLevel()) {
                 case 1:
