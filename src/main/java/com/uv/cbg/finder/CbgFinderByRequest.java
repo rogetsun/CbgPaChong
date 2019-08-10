@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author uvsun 2019-08-02 20:48
@@ -176,7 +177,8 @@ public class CbgFinderByRequest implements CbgFinder {
              */
             List<CbgGamer> gamers = new ArrayList<>();
             for (int page = 1; ; page++) {
-
+                //防止请求太快,主动睡会
+                TimeUnit.SECONDS.sleep(5);
                 JSONObject retMsg = this.fetchGameAccount(requestUrl.toString() + "&page=" + page);
                 log.debug("request ret:" + retMsg);
 
