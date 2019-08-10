@@ -17,13 +17,14 @@ public class Main {
     public static void main(String[] args) throws ApiException {
         try {
             systemVariables();
+            long beginTime = System.currentTimeMillis();
             log.info("begin to search my cbg!!!");
             ApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring-config.xml");
             log.debug("applicationContext:" + applicationContext);
             CbgFinderContainer finder = applicationContext.getBean("cbgFinderContainer", CbgFinderContainer.class);
             log.debug("finder:" + finder);
             finder.startCbgFinderSearch();
-            log.info("end to search !!!");
+            log.info("end to search !!! 耗时:[" + ((System.currentTimeMillis() - beginTime) / 1000) + "s]!");
         } catch (BeansException | ApiException e) {
             log.error("运行失败,", e);
         }
