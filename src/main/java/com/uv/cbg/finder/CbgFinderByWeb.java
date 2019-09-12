@@ -2,7 +2,7 @@ package com.uv.cbg.finder;
 
 import com.uv.cbg.CbgFindResult;
 import com.uv.cbg.CbgGamer;
-import com.uv.cbg.FilterBean;
+import com.uv.cbg.filter.search.FilterBean;
 import com.uv.driver.MyDriver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

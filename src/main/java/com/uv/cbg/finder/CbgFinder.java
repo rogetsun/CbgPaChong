@@ -1,7 +1,7 @@
 package com.uv.cbg.finder;
 
 import com.uv.cbg.CbgFindResult;
-import com.uv.cbg.FilterBean;
+import com.uv.cbg.filter.search.FilterBean;
 
 import java.io.IOException;
 

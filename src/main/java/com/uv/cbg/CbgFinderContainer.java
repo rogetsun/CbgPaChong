@@ -1,6 +1,7 @@
 package com.uv.cbg;
 
 import com.taobao.api.ApiException;
+import com.uv.cbg.filter.costperformance.CostPerformanceFilter;
 import com.uv.cbg.finder.CbgFinder;
 import com.uv.notify.Notify;
 import org.apache.commons.logging.Log;

@@ -1,4 +1,4 @@
-package com.uv.cbg;
+package com.uv.cbg.filter.search;
 
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Value;

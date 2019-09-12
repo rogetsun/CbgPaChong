@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.uv.cbg.CbgFindResult;
 import com.uv.cbg.CbgGamer;
-import com.uv.cbg.FilterBean;
+import com.uv.cbg.filter.search.FilterBean;
 import com.uv.notify.DingNotify;
 import com.uv.notify.HttpUtil;
 import org.apache.commons.logging.Log;

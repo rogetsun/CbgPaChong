@@ -1,5 +1,6 @@
-package com.uv.cbg;
+package com.uv.cbg.filter.costperformance;
 
+import com.uv.cbg.CbgGamer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;

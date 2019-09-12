@@ -1,0 +1,82 @@
+{
+  "filters": [
+    {
+      "level": 2,
+      "person_score": 20000,
+      "total_score": 30000,
+      "schools": [
+        1,
+        2,
+        3,
+        8
+      ],
+      "show_publish": true,
+      "platform": 0
+    },
+    {
+      "level": 1,
+      "person_score": 10000,
+      "total_score": 20000,
+      "schools": [
+        1,
+        2,
+        3,
+        8
+      ],
+      "show_publish": true,
+      "platform": 0
+    }
+  ],
+  "cost_performance_info": {
+    "1": {
+      "level": 1,
+      "cost_performances": [
+        {
+          "person_score": 18000,
+          "price": 3000
+        },
+        {
+          "person_score": 15000,
+          "price": 1000
+        },
+        {
+          "total_score": 28000,
+          "price": 1000
+        },
+        {
+          "total_score": 30000,
+          "price": 1500
+        }
+      ]
+    },
+    "2": {
+      "level": 2,
+      "cost_performances": [
+        {
+          "person_score": 22000,
+          "price": 8000
+        },
+        {
+          "person_score": 23000,
+          "price": 12000
+        },
+        {
+          "person_score": 24000,
+          "price": 14000
+        },
+        {
+          "total_score": 35000,
+          "price": 8000
+        },
+        {
+          "total_score": 40000,
+          "price": 12000
+        },
+        {
+          "total_score": 42000,
+          "price": 16000
+        }
+      ]
+    }
+  }
+}

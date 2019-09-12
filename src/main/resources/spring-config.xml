@@ -52,12 +52,16 @@
 
 
     <!-- 初步搜索筛选配置封装类-->
-    <bean id="filter" class="com.uv.cbg.FilterBean" scope="prototype">
+    <bean id="filter" class="com.uv.cbg.filter.search.FilterBean" scope="prototype">
         <property name="level" value="${search.level.value}"/>
         <property name="schools" value="${search.school.values}"/>
         <property name="totalScore" value="${search.score.value.total_score}"/>
         <property name="personScore" value="${search.score.value.person_score}"/>
         <property name="showPublish" value="${search.showPublish}"/>
+    </bean>
+
+    <bean id="configJsonFactory" class="com.uv.cbg.filter.ConfigJsonFactory" init-method="init">
+        <property name="configJsonFile" value="${config.json.file}"/>
     </bean>
 
     <!--
@@ -88,7 +92,7 @@
     <!--
         初步找到帐号后根据此类的性价比配置，做过性价比过滤
     -->
-    <bean id="costPerformanceFilter" class="com.uv.cbg.CostPerformanceFilter" init-method="setCP">
+    <bean id="costPerformanceFilter" class="com.uv.cbg.filter.costperformance.CostPerformanceFilter" init-method="setCP">
         <property name="totalCP" value="${cost_performance.total_score}"/>
         <property name="personCP" value="${cost_performance.person_score}"/>
     </bean>
