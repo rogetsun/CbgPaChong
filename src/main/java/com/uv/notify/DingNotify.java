@@ -151,4 +151,10 @@ public class DingNotify implements Notify {
         return response;
     }
 
+    public static void main(String[] args) throws ApiException {
+        DingNotify notify = new DingNotify();
+        notify.URL = "https://oapi.dingtalk.com/robot/send?access_token=52be9601d226b6c7b8f05c27390825f9fc41640046cefeb0f80fa9046bd7a0a9";
+        notify.sendLinkMsg("title", "content", "https://www.baidu.com", "null");
+    }
+
 }
