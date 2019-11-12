@@ -105,7 +105,7 @@
         <property name="costFilter" ref="costPerformanceFilter"/>
         <property name="notify" ref="dingNotify"/>
         <property name="threadCount" value="${thread.count}"/>
-        <property name="finderBeanName" value="cbgFinderByWeb"/>
+        <property name="finderBeanName" value="requestFinder"/>
     </bean>
 
 
