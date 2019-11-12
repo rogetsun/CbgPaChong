@@ -12,6 +12,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * * chromeDriver是谷歌的浏览器驱动，用来适配Selenium,有图形页面存在，在调试爬虫下载运行的功能的时候会相对方便
@@ -35,7 +36,7 @@ public class Study1 {
         return new RemoteWebDriver(Study1.service.getUrl(), DesiredCapabilities.chrome());
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
 
         WebDriver driver = Study1.getChromeDriver();
         // 让浏览器访问 Baidu
@@ -59,6 +60,7 @@ public class Study1 {
         // 输入关键字
         // 提交 input 所在的 form
         element = driver.findElement(By.id("kw"));
+        element.sendKeys("藏宝阁");
         element.submit();
         // 通过判断 title 内容等待搜索页面加载完毕，间隔秒
         new WebDriverWait(driver, 10).until(new ExpectedCondition() {
@@ -71,6 +73,7 @@ public class Study1 {
         // 显示搜索结果页面的 title
         System.out.println(" Page title is: " + driver.getTitle());
         // 关闭浏览器
+        TimeUnit.SECONDS.sleep(10);
         driver.quit();
         // 关闭 ChromeDriver 接口
         service.stop();
