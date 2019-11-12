@@ -22,9 +22,9 @@ public class Main {
             log.info("begin to search my cbg!!!");
             ApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring-config.xml");
             log.debug("applicationContext:" + applicationContext);
-//            CbgFinderContainer finder = applicationContext.getBean("cbgFinderContainer", CbgFinderContainer.class);
-//            log.debug("finder:" + finder);
-//            finder.startCbgFinderSearch();
+            CbgFinderContainer finder = applicationContext.getBean("cbgFinderContainer", CbgFinderContainer.class);
+            log.debug("finder:" + finder);
+            finder.startCbgFinderSearch();
             ConfigJsonFactory configJsonFactory = applicationContext.getBean("configJsonFactory", ConfigJsonFactory.class);
             log.info("end to search !!! 耗时:[" + ((System.currentTimeMillis() - beginTime) / 1000) + "s]!");
         } catch (Throwable e) {

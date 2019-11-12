@@ -201,16 +201,18 @@ public class CbgFinderByWeb implements CbgFinder {
         log.debug(this.getFilterBean());
         driver.findElement(By.linkText("筛选")).click();
 
-        WebElement filterDiv = driver.findElement(By.className("sf-container"));
-        List<WebElement> filters = filterDiv.findElements(By.className("opts"));
-
+        WebElement filterDiv = driver.findElement(By.className("sf-container")).findElement(By.className("am-conditions"));
+        List<WebElement> filters = filterDiv.findElements(By.xpath("div"));
+        log.debug("filters.size:" + filters.size());
         if (filterBean.getLevel() != 0) {
             log.debug("set level");
             this.setFilterLevel(filters.get(filterBean.getLevelHtmlIdx()));
         }
         if (filterBean.getTotalScore() != 0 || filterBean.getPersonScore() != 0) {
             log.debug("set score");
-            this.setFilterScore(filters.get(filterBean.getScoreHtmlIdx()));
+            int idx = filterBean.getScoreHtmlIdx();
+            WebElement webElement = filters.get(idx);
+            this.setFilterScore(webElement);
         }
         if (filterBean.getSchools() != null && !"".equals(filterBean.getSchools())) {
             log.debug("set menpai");
@@ -261,7 +263,8 @@ public class CbgFinderByWeb implements CbgFinder {
         }
     }
 
-    private void setFilterScore(WebElement element) throws InterruptedException {
+    private void setFilterScore(WebElement element) {
+        log.debug(element.getAttribute("outerHTML"));
         element.click();
         if (this.getFilterBean().getPersonScore() != 0) {
             WebElement input = element.findElement(By.name("role_score"));
